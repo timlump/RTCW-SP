@@ -148,6 +148,10 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 #endif
 
+#ifndef CPUSTRING
+#define CPUSTRING "win-x64"
+#endif
+
 
 #define PATH_SEP '\\'
 

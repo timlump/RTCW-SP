@@ -65,13 +65,24 @@ Sys_SnapVector
 ================
 */
 long fastftol( float f ) {
+#ifdef _WIN64
+	return (long)f;
+#else
 	static int tmp;
 	__asm fld f
 	__asm fistp tmp
 	__asm mov eax, tmp
+#endif
 }
 
 void Sys_SnapVector( float *v ) {
+#ifdef _WIN64
+	*v = fastftol(*v);
+	v++;
+	*v = fastftol(*v);
+	v++;
+	*v = fastftol(*v);
+#else
 	int i;
 	float f;
 
@@ -89,13 +100,7 @@ void Sys_SnapVector( float *v ) {
 	__asm fld f;
 	__asm fistp i;
 	*v = i;
-	/*
-	*v = fastftol(*v);
-	v++;
-	*v = fastftol(*v);
-	v++;
-	*v = fastftol(*v);
-	*/
+#endif
 }
 
 /*
@@ -113,6 +118,8 @@ void Sys_SnapVector( float *v ) {
 ** --------------------------------------------------------------------------------
 */
 static void CPUID( int func, unsigned regs[4] ) {
+#ifdef _WIN64
+#else
 	unsigned regEAX, regEBX, regECX, regEDX;
 
 	__asm mov eax, func
@@ -127,9 +134,13 @@ static void CPUID( int func, unsigned regs[4] ) {
 	regs[1] = regEBX;
 	regs[2] = regECX;
 	regs[3] = regEDX;
+#endif
 }
 
 static int IsPentium( void ) {
+#ifdef _WIN64
+	return qtrue;
+#else
 	__asm
 	{
 		pushfd                      // save eflags
@@ -159,9 +170,13 @@ err:
 	return qfalse;
 good:
 	return qtrue;
+#endif
 }
 
 static int Is3DNOW( void ) {
+#ifdef _WIN64
+	return qfalse;
+#else
 	unsigned regs[4];
 	char pstring[16];
 	char processorString[13];
@@ -199,9 +214,13 @@ static int Is3DNOW( void ) {
 	}
 
 	return qfalse;
+#endif
 }
 
 static int IsKNI( void ) {
+#ifdef _WIN64
+	return qfalse;
+#else
 	unsigned regs[4];
 
 	// get CPU feature bits
@@ -213,9 +232,13 @@ static int IsKNI( void ) {
 	}
 
 	return qfalse;
+#endif
 }
 
 static int IsMMX( void ) {
+#ifdef _WIN64
+	return qfalse;
+#else
 	unsigned regs[4];
 
 	// get CPU feature bits
@@ -226,9 +249,13 @@ static int IsMMX( void ) {
 		return qtrue;
 	}
 	return qfalse;
+#endif
 }
 
 static int IsP3() {
+#ifdef _WIN64
+	return qtrue;
+#else
 	unsigned regs[4];
 
 	// get CPU feature bits
@@ -254,9 +281,13 @@ static int IsP3() {
 	}
 
 	return qtrue;
+#endif
 }
 
 static int IsAthlon() {
+#ifdef _WIN64
+	return qfalse;
+#else
 	unsigned regs[4];
 	char pstring[16];
 	char processorString[13];
@@ -320,9 +351,13 @@ static int IsAthlon() {
 	}
 
 	return qtrue;
+#endif
 }
 
 int Sys_GetProcessorId( void ) {
+#ifdef _WIN64
+	return CPUID_INTEL_PENTIUM;
+#else
 #if defined _M_ALPHA
 	return CPUID_AXP;
 #elif !defined _M_IX86
@@ -354,10 +389,15 @@ int Sys_GetProcessorId( void ) {
 	return CPUID_INTEL_MMX;
 
 #endif
+#endif
 }
 
 int Sys_GetHighQualityCPU() {
+#ifdef _WIN64
+	return 1;
+#else
 	return ( !IsP3() && !IsAthlon() ) ? 0 : 1;
+#endif
 }
 
 /*

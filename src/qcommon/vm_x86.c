@@ -30,6 +30,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "vm_local.h"
 
+#ifndef _WIN64
+
 #ifndef _WIN32
 #include <sys/mman.h> // for PROT_ stuff
 #endif
@@ -824,3 +826,4 @@ int VM_CallCompiled( vm_t *vm, int *args ) {
 	return *(int *)opStack;
 }
 
+#endif
