@@ -96,3 +96,4 @@ add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME} 
 botlib cgame game renderer splines ui
 winmm.lib wsock32.lib)
+target_link_options(${PROJECT_NAME} PUBLIC $<$<CXX_COMPILER_ID:MSVC>:/LARGEADDRESSAWARE:NO>)
