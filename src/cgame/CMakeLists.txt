@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.2)
 project (cgame)
 
-add_definitions(-DCGAMEDLL)
+add_definitions(
+-DCGAMEDLL
+-D_CRT_SECURE_NO_WARNINGS)
 
 set(HEADER_FILES
 ../game/bg_local.h
@@ -14,7 +16,6 @@ cg_public.h
 ../game/surfaceflags.h
 tr_types.h
 ../ui/ui_shared.h
-cgame.def
 )
 
 set(SOURCE_FILES
@@ -50,6 +51,7 @@ cg_weapons.c
 ../game/q_math.c
 ../game/q_shared.c
 ../ui/ui_shared.c
+cgame.def
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES})

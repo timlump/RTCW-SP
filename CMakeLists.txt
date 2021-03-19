@@ -3,3 +3,8 @@ project (rtcw)
 
 add_subdirectory(src/botlib)
 add_subdirectory(src/cgame)
+add_subdirectory(src/extractfuncs)
+add_subdirectory(src/game)
+add_subdirectory(src/ui)
+add_subdirectory(src/renderer)
+add_subdirectory(src)

@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.2)
 project (botlib)
 
-add_definitions(-DBOTLIB)
+add_definitions(
+-D_LIB
+-DBOTLIB
+-D_CRT_SECURE_NO_WARNINGS
+)
 
 set(HEADER_FILES
 aasfile.h
