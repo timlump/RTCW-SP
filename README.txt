@@ -1,3 +1,5 @@
+This is a work in progress attempt to modernise return to castle wolfenstein while keeping it as stock as possible.
+
 Return to Castle Wolfenstein single player GPL source release
 =============================================================
 
