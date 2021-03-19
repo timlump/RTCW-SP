@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "qcommon.h"
 #include <setjmp.h>
 
-#define MAXPRINTMSG 4096
+#define MAXPRINTMSG 4096*4
 
 #define MAX_NUM_ARGVS   50
 

@@ -611,9 +611,9 @@ void * QDECL Sys_LoadDll( const char *name, int( QDECL **entryPoint ) ( int, ...
 	char filename[MAX_QPATH];
 
 #ifdef WOLF_SP_DEMO
-	Com_sprintf( filename, sizeof( filename ), "%sx86_d.dll", name );
+	Com_sprintf( filename, sizeof( filename ), "%s.dll", name );
 #else
-	Com_sprintf( filename, sizeof( filename ), "%sx86.dll", name );
+	Com_sprintf( filename, sizeof( filename ), "%s.dll", name );
 #endif
 
 
