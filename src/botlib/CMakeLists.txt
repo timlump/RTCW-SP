@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.2)
 project (botlib)
 
 add_definitions(-DBOTLIB)
@@ -75,4 +75,4 @@ l_script.c
 l_struct.c
 )
 
-add_library(botlib STATIC ${SOURCE_FILES} ${HEADER_FILES})
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
