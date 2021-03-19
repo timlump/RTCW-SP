@@ -7,6 +7,8 @@ add_definitions(
 -D_CRT_SECURE_NO_WARNINGS
 )
 
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:8388608")
+
 set(HEADER_FILES
 game/bg_public.h
 botai/botai.h
@@ -90,5 +92,7 @@ win32/win_syscon.c
 win32/win_wndproc.c
 )
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(${PROJECT_NAME} botlib winmm.lib wsock32.lib)
+add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES} ${HEADER_FILES})
+target_link_libraries(${PROJECT_NAME} 
+botlib cgame game renderer splines ui
+winmm.lib wsock32.lib)
