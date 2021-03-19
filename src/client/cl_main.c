@@ -2056,7 +2056,7 @@ void CL_Frame( int msec ) {
 //	}
 
 	// advance local effects for next frame
-	SCR_RunCinematic();
+	//SCR_RunCinematic();
 
 	Con_RunConsole();
 

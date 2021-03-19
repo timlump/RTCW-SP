@@ -1184,13 +1184,17 @@ void AAS_InitRouting( void ) {
 	max_routingcachesize = 1024 * (int) LibVarValue( "max_routingcache", "4096" );
 	//
 	// Ridah, load or create the routing cache
-	if ( !AAS_ReadRouteCache() ) {
+#ifndef _WIN64
+	if ( !AAS_ReadRouteCache() )
+#endif
+	{
 		( *aasworld ).initialized = qtrue;    // Hack, so routing can compute traveltimes
 		AAS_CreateVisibility();
 		AAS_CreateAllRoutingCache();
 		( *aasworld ).initialized = qfalse;
-
+#ifndef _WIN64
 		AAS_WriteRouteCache();  // save it so we don't have to create it again
+#endif
 	}
 	// done.
 } //end of the function AAS_InitRouting

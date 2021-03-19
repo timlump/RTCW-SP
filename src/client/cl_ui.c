@@ -1138,7 +1138,8 @@ int CL_UISystemCalls( int *args ) {
 		return CIN_StopCinematic( args[1] );
 
 	case UI_CIN_RUNCINEMATIC:
-		return CIN_RunCinematic( args[1] );
+		return 0;
+		//return CIN_RunCinematic( args[1] );
 
 	case UI_CIN_DRAWCINEMATIC:
 		CIN_DrawCinematic( args[1] );
