@@ -45,8 +45,25 @@ If you have questions concerning this license or the applicable additional terms
 #pragma warning (disable: 4032)
 #pragma warning (disable: 4201)
 #pragma warning (disable: 4214)
+
 #include <windows.h>
+#ifdef _USE_ANGLE
+#include <angle_gl.h>
+#define GL_POLYGON                        0x0009
+#define GL_LINE                           0x1B01
+#define GL_FILL                           0x1B02
+#define GL_QUAD_STRIP                     0x0008
+#define GL_RGB5                           0x8050
+#define GL_CLAMP                          0x2900
+#define GL_EYE_PLANE                      0x2502
+#define GL_BACK_LEFT                      0x0402
+#define GL_BACK_RIGHT                     0x0403
+#define GL_DOUBLE                         0x140A
+#define GL_ACCUM_BUFFER_BIT               0x00000200
+typedef double GLclampd;
+#else
 #include <gl/gl.h>
+#endif
 
 #elif defined( MACOS_X )
 
