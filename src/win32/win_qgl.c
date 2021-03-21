@@ -73,9 +73,7 @@ int ( WINAPI * qwglGetLayerPaletteEntries )( HDC, int, int, int,
 BOOL ( WINAPI * qwglRealizeLayerPalette )( HDC, int, BOOL );
 BOOL ( WINAPI * qwglSwapLayerBuffers )( HDC, UINT );
 
-void ( APIENTRY * qglAccum )( GLenum op, GLfloat value );
 void ( APIENTRY * qglAlphaFunc )( GLenum func, GLclampf ref );
-GLboolean ( APIENTRY * qglAreTexturesResident )( GLsizei n, const GLuint *textures, GLboolean *residences );
 void ( APIENTRY * qglArrayElement )( GLint i );
 void ( APIENTRY * qglBegin )( GLenum mode );
 void ( APIENTRY * qglBindTexture )( GLenum target, GLuint texture );
@@ -84,46 +82,15 @@ void ( APIENTRY * qglBlendFunc )( GLenum sfactor, GLenum dfactor );
 void ( APIENTRY * qglCallList )( GLuint list );
 void ( APIENTRY * qglCallLists )( GLsizei n, GLenum type, const GLvoid *lists );
 void ( APIENTRY * qglClear )( GLbitfield mask );
-void ( APIENTRY * qglClearAccum )( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha );
 void ( APIENTRY * qglClearColor )( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha );
 void ( APIENTRY * qglClearDepth )( GLclampd depth );
-void ( APIENTRY * qglClearIndex )( GLfloat c );
 void ( APIENTRY * qglClearStencil )( GLint s );
 void ( APIENTRY * qglClipPlane )( GLenum plane, const GLdouble *equation );
-void ( APIENTRY * qglColor3b )( GLbyte red, GLbyte green, GLbyte blue );
-void ( APIENTRY * qglColor3bv )( const GLbyte *v );
-void ( APIENTRY * qglColor3d )( GLdouble red, GLdouble green, GLdouble blue );
-void ( APIENTRY * qglColor3dv )( const GLdouble *v );
 void ( APIENTRY * qglColor3f )( GLfloat red, GLfloat green, GLfloat blue );
 void ( APIENTRY * qglColor3fv )( const GLfloat *v );
-void ( APIENTRY * qglColor3i )( GLint red, GLint green, GLint blue );
-void ( APIENTRY * qglColor3iv )( const GLint *v );
-void ( APIENTRY * qglColor3s )( GLshort red, GLshort green, GLshort blue );
-void ( APIENTRY * qglColor3sv )( const GLshort *v );
-void ( APIENTRY * qglColor3ub )( GLubyte red, GLubyte green, GLubyte blue );
-void ( APIENTRY * qglColor3ubv )( const GLubyte *v );
-void ( APIENTRY * qglColor3ui )( GLuint red, GLuint green, GLuint blue );
-void ( APIENTRY * qglColor3uiv )( const GLuint *v );
-void ( APIENTRY * qglColor3us )( GLushort red, GLushort green, GLushort blue );
-void ( APIENTRY * qglColor3usv )( const GLushort *v );
-void ( APIENTRY * qglColor4b )( GLbyte red, GLbyte green, GLbyte blue, GLbyte alpha );
-void ( APIENTRY * qglColor4bv )( const GLbyte *v );
-void ( APIENTRY * qglColor4d )( GLdouble red, GLdouble green, GLdouble blue, GLdouble alpha );
-void ( APIENTRY * qglColor4dv )( const GLdouble *v );
 void ( APIENTRY * qglColor4f )( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha );
-void ( APIENTRY * qglColor4fv )( const GLfloat *v );
-void ( APIENTRY * qglColor4i )( GLint red, GLint green, GLint blue, GLint alpha );
-void ( APIENTRY * qglColor4iv )( const GLint *v );
-void ( APIENTRY * qglColor4s )( GLshort red, GLshort green, GLshort blue, GLshort alpha );
-void ( APIENTRY * qglColor4sv )( const GLshort *v );
-void ( APIENTRY * qglColor4ub )( GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha );
 void ( APIENTRY * qglColor4ubv )( const GLubyte *v );
-void ( APIENTRY * qglColor4ui )( GLuint red, GLuint green, GLuint blue, GLuint alpha );
-void ( APIENTRY * qglColor4uiv )( const GLuint *v );
-void ( APIENTRY * qglColor4us )( GLushort red, GLushort green, GLushort blue, GLushort alpha );
-void ( APIENTRY * qglColor4usv )( const GLushort *v );
 void ( APIENTRY * qglColorMask )( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
-void ( APIENTRY * qglColorMaterial )( GLenum face, GLenum mode );
 void ( APIENTRY * qglColorPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 void ( APIENTRY * qglCopyPixels )( GLint x, GLint y, GLsizei width, GLsizei height, GLenum type );
 void ( APIENTRY * qglCopyTexImage1D )( GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLint border );
@@ -410,6 +377,16 @@ void ( APIENTRY * qglVertex4sv )( const GLshort *v );
 void ( APIENTRY * qglVertexPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 void ( APIENTRY * qglViewport )( GLint x, GLint y, GLsizei width, GLsizei height );
 
+void glBegin_impl(GLenum mode)
+{
+	glBegin(mode);
+}
+
+void glEnd_impl()
+{
+	glEnd();
+}
+
 /*
 ** QGL_Shutdown
 **
@@ -426,9 +403,7 @@ void QGL_Shutdown( void ) {
 
 	glw_state.hinstOpenGL = NULL;
 
-	qglAccum                     = NULL;
 	qglAlphaFunc                 = NULL;
-	qglAreTexturesResident       = NULL;
 	qglArrayElement              = NULL;
 	qglBegin                     = NULL;
 	qglBindTexture               = NULL;
@@ -437,46 +412,15 @@ void QGL_Shutdown( void ) {
 	qglCallList                  = NULL;
 	qglCallLists                 = NULL;
 	qglClear                     = NULL;
-	qglClearAccum                = NULL;
 	qglClearColor                = NULL;
 	qglClearDepth                = NULL;
-	qglClearIndex                = NULL;
 	qglClearStencil              = NULL;
 	qglClipPlane                 = NULL;
-	qglColor3b                   = NULL;
-	qglColor3bv                  = NULL;
-	qglColor3d                   = NULL;
-	qglColor3dv                  = NULL;
 	qglColor3f                   = NULL;
 	qglColor3fv                  = NULL;
-	qglColor3i                   = NULL;
-	qglColor3iv                  = NULL;
-	qglColor3s                   = NULL;
-	qglColor3sv                  = NULL;
-	qglColor3ub                  = NULL;
-	qglColor3ubv                 = NULL;
-	qglColor3ui                  = NULL;
-	qglColor3uiv                 = NULL;
-	qglColor3us                  = NULL;
-	qglColor3usv                 = NULL;
-	qglColor4b                   = NULL;
-	qglColor4bv                  = NULL;
-	qglColor4d                   = NULL;
-	qglColor4dv                  = NULL;
 	qglColor4f                   = NULL;
-	qglColor4fv                  = NULL;
-	qglColor4i                   = NULL;
-	qglColor4iv                  = NULL;
-	qglColor4s                   = NULL;
-	qglColor4sv                  = NULL;
-	qglColor4ub                  = NULL;
 	qglColor4ubv                 = NULL;
-	qglColor4ui                  = NULL;
-	qglColor4uiv                 = NULL;
-	qglColor4us                  = NULL;
-	qglColor4usv                 = NULL;
 	qglColorMask                 = NULL;
-	qglColorMaterial             = NULL;
 	qglColorPointer              = NULL;
 	qglCopyPixels                = NULL;
 	qglCopyTexImage1D            = NULL;
@@ -827,57 +771,24 @@ qboolean QGL_Init( const char *dllname ) {
 	}
 	ri.Printf( PRINT_ALL, "succeeded\n" );
 
-	qglAccum = glAccum;
 	qglAlphaFunc                 = glAlphaFunc;
-	qglAreTexturesResident       = glAreTexturesResident;
 	qglArrayElement              = glArrayElement;
-	qglBegin                     = glBegin;
+	qglBegin                     = glBegin_impl;
 	qglBindTexture               = glBindTexture;
 	qglBitmap                    = glBitmap;
 	qglBlendFunc                 = glBlendFunc;
 	qglCallList                  = glCallList;
 	qglCallLists                 = glCallLists;
 	qglClear                     = glClear;
-	qglClearAccum                = glClearAccum;
 	qglClearColor                = glClearColor;
 	qglClearDepth                = glClearDepth;
-	qglClearIndex                = glClearIndex;
 	qglClearStencil              = glClearStencil;
 	qglClipPlane                 = glClipPlane;
-	qglColor3b                   = glColor3b;
-	qglColor3bv                  = glColor3bv;
-	qglColor3d                   = glColor3d;
-	qglColor3dv                  = glColor3dv;
 	qglColor3f                   = glColor3f;
 	qglColor3fv                  = glColor3fv;
-	qglColor3i                   = glColor3i;
-	qglColor3iv                  = glColor3iv;
-	qglColor3s                   = glColor3s;
-	qglColor3sv                  = glColor3sv;
-	qglColor3ub                  = glColor3ub;
-	qglColor3ubv                 = glColor3ubv;
-	qglColor3ui                  = glColor3ui;
-	qglColor3uiv                 = glColor3uiv;
-	qglColor3us                  = glColor3us;
-	qglColor3usv                 = glColor3usv;
-	qglColor4b                   = glColor4b;
-	qglColor4bv                  = glColor4bv;
-	qglColor4d                   = glColor4d;
-	qglColor4dv                  = glColor4dv;
 	qglColor4f                   = glColor4f;
-	qglColor4fv                  = glColor4fv;
-	qglColor4i                   = glColor4i;
-	qglColor4iv                  = glColor4iv;
-	qglColor4s                   = glColor4s;
-	qglColor4sv                  = glColor4sv;
-	qglColor4ub                  = glColor4ub;
 	qglColor4ubv                 = glColor4ubv;
-	qglColor4ui                  = glColor4ui;
-	qglColor4uiv                 = glColor4uiv;
-	qglColor4us                  = glColor4us;
-	qglColor4usv                 = glColor4usv;
 	qglColorMask                 = glColorMask;
-	qglColorMaterial             = glColorMaterial;
 	qglColorPointer              = glColorPointer;
 	qglCopyPixels                = glCopyPixels;
 	qglCopyTexImage1D            = glCopyTexImage1D;
@@ -901,7 +812,7 @@ qboolean QGL_Init( const char *dllname ) {
 	qglEdgeFlagv                 = glEdgeFlagv;
 	qglEnable                    = glEnable;
 	qglEnableClientState         = glEnableClientState;
-	qglEnd                       = glEnd;
+	qglEnd                       = glEnd_impl;
 	qglEndList                   = glEndList;
 	qglEvalCoord1d               = glEvalCoord1d;
 	qglEvalCoord1dv              = glEvalCoord1dv;
