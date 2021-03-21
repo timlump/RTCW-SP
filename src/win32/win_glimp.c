@@ -1095,40 +1095,6 @@ static void GLW_InitExtensions( void ) {
 //	ARB_multisample
 }
 
-
-/*
-** GLW_CheckOSVersion
-*/
-static qboolean GLW_CheckOSVersion( void ) {
-#define OSR2_BUILD_NUMBER 1111
-
-	OSVERSIONINFO vinfo;
-
-	vinfo.dwOSVersionInfoSize = sizeof( vinfo );
-
-	glw_state.allowdisplaydepthchange = qfalse;
-
-	if ( GetVersionEx( &vinfo ) ) {
-		if ( vinfo.dwMajorVersion > 4 ) {
-			glw_state.allowdisplaydepthchange = qtrue;
-		} else if ( vinfo.dwMajorVersion == 4 )   {
-			if ( vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT ) {
-				glw_state.allowdisplaydepthchange = qtrue;
-			} else if ( vinfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )   {
-				if ( LOWORD( vinfo.dwBuildNumber ) >= OSR2_BUILD_NUMBER ) {
-					glw_state.allowdisplaydepthchange = qtrue;
-				}
-			}
-		}
-	} else
-	{
-		ri.Printf( PRINT_ALL, "GLW_CheckOSVersion() - GetVersionEx failed\n" );
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
 /*
 ** GLW_LoadOpenGL
 **
@@ -1325,12 +1291,7 @@ void GLimp_Init( void ) {
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL subsystem\n" );
 
-	//
-	// check OS version to see if we can do fullscreen display changes
-	//
-	if ( !GLW_CheckOSVersion() ) {
-		ri.Error( ERR_FATAL, "GLimp_Init() - incorrect operating system\n" );
-	}
+	glw_state.allowdisplaydepthchange = qtrue;
 
 	// save off hInstance and wndproc
 	cv = ri.Cvar_Get( "win_hinstance", "", 0 );
@@ -1384,34 +1345,7 @@ void GLimp_Init( void ) {
 		}
 	}
 
-	//
-	// this is where hardware specific workarounds that should be
-	// detected/initialized every startup should go.
-	//
-	if ( strstr( buf, "banshee" ) || strstr( buf, "voodoo3" ) ) {
-		glConfig.hardwareType = GLHW_3DFX_2D3D;
-	}
-	// VOODOO GRAPHICS w/ 2MB
-	else if ( strstr( buf, "voodoo graphics/1 tmu/2 mb" ) ) {
-	} else if ( strstr( buf, "glzicd" ) )    {
-	} else if ( strstr( buf, "rage pro" ) || strstr( buf, "Rage Pro" ) || strstr( buf, "ragepro" ) )       {
-		glConfig.hardwareType = GLHW_RAGEPRO;
-	} else if ( strstr( buf, "rage 128" ) )    {
-	} else if ( strstr( buf, "permedia2" ) )    {
-		glConfig.hardwareType = GLHW_PERMEDIA2;
-	} else if ( strstr( buf, "riva 128" ) )    {
-		glConfig.hardwareType = GLHW_RIVA128;
-	} else if ( strstr( buf, "riva tnt " ) )    {
-	}
-
-	if ( strstr( buf, "geforce" ) || strstr( buf, "ge-force" ) || strstr( buf, "radeon" ) || strstr( buf, "nv20" ) || strstr( buf, "nv30" )
-		 || strstr( buf, "quadro" ) ) {
-		ri.Cvar_Set( "r_highQualityVideo", "1" );
-	} else {
-		ri.Cvar_Set( "r_highQualityVideo", "0" );
-	}
-
-
+	ri.Cvar_Set("r_highQualityVideo", "1");
 	ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
 
 	GLW_InitExtensions();
