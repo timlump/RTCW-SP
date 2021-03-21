@@ -147,14 +147,374 @@ void ( APIENTRY * qglVertex3fv )( const GLfloat *v );
 void ( APIENTRY * qglVertexPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 void ( APIENTRY * qglViewport )( GLint x, GLint y, GLsizei width, GLsizei height );
 
+void glAlphaFunc_impl(GLenum func, GLclampf ref)
+{
+	glAlphaFunc(func, ref);
+}
+
+void glArrayElement_impl(GLint i)
+{
+	glArrayElement(i);
+}
+
 void glBegin_impl(GLenum mode)
 {
 	glBegin(mode);
 }
 
-void glEnd_impl()
+void glBindTexture_impl(GLenum target, GLuint texture)
+{
+	glBindTexture(target, texture);
+}
+
+void glBitmap_impl(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, const GLubyte* bitmap)
+{
+	glBitmap(width, height, xorig, yorig, xmove, ymove, bitmap);
+}
+
+void glBlendFunc_impl(GLenum sfactor, GLenum dfactor)
+{
+	glBlendFunc(sfactor, dfactor);
+}
+
+void glCallList_impl(GLuint list)
+{
+	glCallList(list);
+}
+
+void glCallLists_impl(GLsizei n, GLenum type, const GLvoid* lists)
+{
+	glCallLists(n, type, lists);
+}
+
+void glClear_impl(GLbitfield mask)
+{
+	glClear(mask);
+}
+
+void glClearColor_impl(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
+{
+	glClearColor(red, green, blue, alpha);
+}
+
+void glClearDepth_impl(GLclampd depth)
+{
+	glClearDepth(depth);
+}
+
+void glClearIndex_impl(GLfloat c)
+{
+	glClearIndex(c);
+}
+
+void glClearStencil_impl(GLint s)
+{
+	glClearStencil(s);
+}
+
+void glClipPlane_impl(GLenum plane, const GLdouble* equation)
+{
+	glClipPlane(plane, equation);
+}
+
+void glColor3f_impl(GLfloat red, GLfloat green, GLfloat blue)
+{
+	glColor3f(red, green, blue);
+}
+
+void glColor3fv_impl(const GLfloat* v)
+{
+	glColor3fv(v);
+}
+
+void glColor3ubv_impl(const GLubyte* v)
+{
+	glColor3ubv(v);
+}
+
+void glColor4f_impl(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
+{
+	glColor4f(red, green, blue, alpha);
+}
+
+void glColor4ubv_impl(const GLubyte* v)
+{
+	glColor4ubv(v);
+}
+
+void glColorMask_impl(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+{
+	glColorMask(red, green, blue, alpha);
+}
+
+void glColorPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
+{
+	glColorPointer(size, type, stride, pointer);
+}
+
+void glCullFace_impl(GLenum mode)
+{
+	glCullFace(mode);
+}
+
+void glDeleteTextures_impl(GLsizei n, const GLuint* textures)
+{
+	glDeleteTextures(n, textures);
+}
+
+void glDepthFunc_impl(GLenum func)
+{
+	glDepthFunc(func);
+}
+
+void glDepthMask_impl(GLboolean flag)
+{
+	glDepthMask(flag);
+}
+
+void glDepthRange_impl(GLclampd zNear, GLclampd zFar)
+{
+	glDepthRange(zNear, zFar);
+}
+
+void glDisable_impl(GLenum cap)
+{
+	glDisable(cap);
+}
+
+void glDisableClientState_impl(GLenum _array)
+{
+	glDisableClientState(_array);
+}
+
+void glDrawBuffer_impl(GLenum mode)
+{
+	glDrawBuffer(mode);
+}
+
+void glDrawElements_impl(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices)
+{
+	glDrawElements(mode, count, type, indices);
+}
+
+void glEnable_impl(GLenum cap)
+{
+	glEnable(cap);
+}
+
+void glEnableClientState_impl(GLenum _array)
+{
+	glEnableClientState(_array);
+}
+
+void glEnd_impl(void)
 {
 	glEnd();
+}
+
+void glFinish_impl(void)
+{
+	glFinish();
+}
+
+void glFogf_impl(GLenum pname, GLfloat param)
+{
+	glFogf(pname, param);
+}
+
+void glFogfv_impl(GLenum pname, const GLfloat* params)
+{
+	glFogfv(pname, params);
+}
+
+void glFogi_impl(GLenum pname, GLint param)
+{
+	glFogi(pname, param);
+}
+
+GLenum glGetError_impl(void)
+{
+	return glGetError();
+}
+
+void glGetFloatv_impl(GLenum pname, GLfloat* params)
+{
+	glGetFloatv(pname, params);
+}
+
+void glGetIntegerv_impl(GLenum pname, GLint* params)
+{
+	glGetIntegerv(pname, params);
+}
+
+const GLubyte* glGetString_impl(GLenum name)
+{
+	return glGetString(name);
+}
+
+void glHint_impl(GLenum target, GLenum mode)
+{
+	glHint(target, mode);
+}
+
+void glLineWidth_impl(GLfloat width)
+{
+	glLineWidth(width);
+}
+
+void glLoadIdentity_impl(void)
+{
+	glLoadIdentity();
+}
+
+void glLoadMatrixf_impl(const GLfloat* m)
+{
+	glLoadMatrixf(m);
+}
+
+void glMatrixMode_impl(GLenum mode)
+{
+	glMatrixMode(mode);
+}
+
+void glNormalPointer_impl(GLenum type, GLsizei stride, const GLvoid* pointer)
+{
+	glNormalPointer(type, stride, pointer);
+}
+
+void glOrtho_impl(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar)
+{
+	glOrtho(left, right, bottom, top, zNear, zFar);
+}
+
+void glPointSize_impl(GLfloat size)
+{
+	glPointSize(size);
+}
+
+void glPolygonMode_impl(GLenum face, GLenum mode)
+{
+	glPolygonMode(face, mode);
+}
+
+void glPolygonOffset_impl(GLfloat factor, GLfloat units)
+{
+	glPolygonOffset(factor, units);
+}
+
+void glPopMatrix_impl(void)
+{
+	glPopMatrix();
+}
+
+void glPushMatrix_impl(void)
+{
+	glPushMatrix();
+}
+
+void glRasterPos3fv_impl(const GLfloat* v)
+{
+	glRasterPos3fv(v);
+}
+
+void glReadPixels_impl(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
+{
+	glReadPixels(x, y, width, height, format, type, pixels);
+}
+
+void glScissor_impl(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+	glScissor(x, y, width, height);
+}
+
+void glShadeModel_impl(GLenum mode)
+{
+	glShadeModel(mode);
+}
+
+void glStencilFunc_impl(GLenum func, GLint ref, GLuint mask)
+{
+	glStencilFunc(func, ref, mask);
+}
+
+void glStencilMask_impl(GLuint mask)
+{
+	glStencilMask(mask);
+}
+
+void glStencilOp_impl(GLenum fail, GLenum zfail, GLenum zpass)
+{
+	glStencilOp(fail, zfail, zpass);
+}
+
+void glTexCoord2f_impl(GLfloat s, GLfloat t)
+{
+	glTexCoord2f(s, t);
+}
+
+void glTexCoord2fv_impl(const GLfloat* v)
+{
+	glTexCoord3fv(v);
+}
+
+void glTexCoordPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
+{
+	glTexCoordPointer(size, type, stride, pointer);
+}
+
+void glTexEnvf_impl(GLenum target, GLenum pname, GLfloat param)
+{
+	glTexEnvf(target, pname, param);
+}
+
+void glTexImage2D_impl(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels)
+{
+	glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+}
+
+void glTexParameterf_impl(GLenum target, GLenum pname, GLfloat param)
+{
+	glTexParameterf(target, pname, param);
+}
+
+void glTexParameterfv_impl(GLenum target, GLenum pname, const GLfloat* params)
+{
+	glTexParameterfv(target, pname, params);
+}
+
+void glTexSubImage2D_impl(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels)
+{
+	glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+}
+
+void glTranslatef_impl(GLfloat x, GLfloat y, GLfloat z)
+{
+	glTranslatef(x, y, z);
+}
+
+void glVertex2f_impl(GLfloat x, GLfloat y)
+{
+	glVertex2f(x, y);
+}
+
+void glVertex3f_impl(GLfloat x, GLfloat y, GLfloat z)
+{
+	glVertex3f(x, y, z);
+}
+
+void glVertex3fv_impl(const GLfloat* v)
+{
+	glVertex3fv(v);
+}
+
+void glVertexPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
+{
+	glVertexPointer(size, type, stride, pointer);
+}
+
+void glViewport_impl(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+	glViewport(x, y, width, height);
 }
 
 /*
@@ -309,78 +669,78 @@ qboolean QGL_Init( const char *dllname ) {
 	}
 	ri.Printf( PRINT_ALL, "succeeded\n" );
 
-	qglAlphaFunc                 = glAlphaFunc;
-	qglArrayElement              = glArrayElement;
+	qglAlphaFunc                 = glAlphaFunc_impl;
+	qglArrayElement              = glArrayElement_impl;
 	qglBegin                     = glBegin_impl;
-	qglBindTexture               = glBindTexture;
-	qglBitmap                    = glBitmap;
-	qglBlendFunc                 = glBlendFunc;
-	qglCallList                  = glCallList;
-	qglCallLists                 = glCallLists;
-	qglClear                     = glClear;
-	qglClearColor                = glClearColor;
-	qglClearDepth                = glClearDepth;
-	qglClearStencil              = glClearStencil;
-	qglClipPlane                 = glClipPlane;
-	qglColor3f                   = glColor3f;
-	qglColor3fv                  = glColor3fv;
-	qglColor4f                   = glColor4f;
-	qglColor4ubv                 = glColor4ubv;
-	qglColorMask                 = glColorMask;
-	qglColorPointer              = glColorPointer;
-	qglCullFace                  = glCullFace;
-	qglDeleteTextures            = glDeleteTextures;
-	qglDepthFunc                 = glDepthFunc;
-	qglDepthMask                 = glDepthMask;
-	qglDepthRange                = glDepthRange;
-	qglDisable                   = glDisable;
-	qglDisableClientState        = glDisableClientState;
-	qglDrawBuffer                = glDrawBuffer;
-	qglDrawElements              = glDrawElements;
-	qglEnable                    = glEnable;
-	qglEnableClientState         = glEnableClientState;
+	qglBindTexture               = glBindTexture_impl;
+	qglBitmap                    = glBitmap_impl;
+	qglBlendFunc                 = glBlendFunc_impl;
+	qglCallList                  = glCallList_impl;
+	qglCallLists                 = glCallLists_impl;
+	qglClear                     = glClear_impl;
+	qglClearColor                = glClearColor_impl;
+	qglClearDepth                = glClearDepth_impl;
+	qglClearStencil              = glClearStencil_impl;
+	qglClipPlane                 = glClipPlane_impl;
+	qglColor3f                   = glColor3f_impl;
+	qglColor3fv                  = glColor3fv_impl;
+	qglColor4f                   = glColor4f_impl;
+	qglColor4ubv                 = glColor4ubv_impl;
+	qglColorMask                 = glColorMask_impl;
+	qglColorPointer              = glColorPointer_impl;
+	qglCullFace                  = glCullFace_impl;
+	qglDeleteTextures            = glDeleteTextures_impl;
+	qglDepthFunc                 = glDepthFunc_impl;
+	qglDepthMask                 = glDepthMask_impl;
+	qglDepthRange                = glDepthRange_impl;
+	qglDisable                   = glDisable_impl;
+	qglDisableClientState        = glDisableClientState_impl;
+	qglDrawBuffer                = glDrawBuffer_impl;
+	qglDrawElements              = glDrawElements_impl;
+	qglEnable                    = glEnable_impl;
+	qglEnableClientState         = glEnableClientState_impl;
 	qglEnd                       = glEnd_impl;
-	qglFinish                    = glFinish;
-	qglFogf                      = glFogf;
-	qglFogfv                     = glFogfv;
-	qglFogi                      = glFogi;
-	qglGetError                  = ( GLenum ( __stdcall * )(void) )glGetError;
-	qglGetFloatv                 = glGetFloatv;
-	qglGetIntegerv               = glGetIntegerv;
-	qglGetString                 = glGetString;
-	qglHint                      = glHint;
-	qglLineWidth                 = glLineWidth;
-	qglLoadIdentity              = glLoadIdentity;
-	qglLoadMatrixf               = glLoadMatrixf;
-	qglMatrixMode                = glMatrixMode;
-	qglNormalPointer             = glNormalPointer;
-	qglOrtho                     = glOrtho;
-	qglPointSize                 = glPointSize;
-	qglPolygonMode               = glPolygonMode;
-	qglPolygonOffset             = glPolygonOffset;
-	qglPopMatrix                 = glPopMatrix;
-	qglPushMatrix                = glPushMatrix;
-	qglRasterPos3fv              = glRasterPos3fv;
-	qglReadPixels                = glReadPixels;
-	qglScissor                   = glScissor;
-	qglShadeModel                = glShadeModel;
-	qglStencilFunc               = glStencilFunc;
-	qglStencilMask               = glStencilMask;
-	qglStencilOp                 = glStencilOp;
-	qglTexCoord2f                = glTexCoord2f;
-	qglTexCoord2fv               = glTexCoord2fv;
-	qglTexCoordPointer           = glTexCoordPointer;
-	qglTexEnvf                   = glTexEnvf;
-	qglTexImage2D                = glTexImage2D;
-	qglTexParameterf             = glTexParameterf;
-	qglTexParameterfv            = glTexParameterfv;
-	qglTexSubImage2D             = glTexSubImage2D;
-	qglTranslatef                = glTranslatef;
-	qglVertex2f                  = glVertex2f;
-	qglVertex3f                  = glVertex3f;
-	qglVertex3fv                 = glVertex3fv;
-	qglVertexPointer             = glVertexPointer;
-	qglViewport                  = glViewport;
+	qglFinish                    = glFinish_impl;
+	qglFogf                      = glFogf_impl;
+	qglFogfv                     = glFogfv_impl;
+	qglFogi                      = glFogi_impl;
+	qglGetError                  = glGetError_impl;
+	qglGetFloatv                 = glGetFloatv_impl;
+	qglGetIntegerv               = glGetIntegerv_impl;
+	qglGetString                 = glGetString_impl;
+	qglHint                      = glHint_impl;
+	qglLineWidth                 = glLineWidth_impl;
+	qglLoadIdentity              = glLoadIdentity_impl;
+	qglLoadMatrixf               = glLoadMatrixf_impl;
+	qglMatrixMode                = glMatrixMode_impl;
+	qglNormalPointer             = glNormalPointer_impl;
+	qglOrtho                     = glOrtho_impl;
+	qglPointSize                 = glPointSize_impl;
+	qglPolygonMode               = glPolygonMode_impl;
+	qglPolygonOffset             = glPolygonOffset_impl;
+	qglPopMatrix                 = glPopMatrix_impl;
+	qglPushMatrix                = glPushMatrix_impl;
+	qglRasterPos3fv              = glRasterPos3fv_impl;
+	qglReadPixels                = glReadPixels_impl;
+	qglScissor                   = glScissor_impl;
+	qglShadeModel                = glShadeModel_impl;
+	qglStencilFunc               = glStencilFunc_impl;
+	qglStencilMask               = glStencilMask_impl;
+	qglStencilOp                 = glStencilOp_impl;
+	qglTexCoord2f                = glTexCoord2f_impl;
+	qglTexCoord2fv               = glTexCoord2fv_impl;
+	qglTexCoordPointer           = glTexCoordPointer_impl;
+	qglTexEnvf                   = glTexEnvf_impl;
+	qglTexImage2D                = glTexImage2D_impl;
+	qglTexParameterf             = glTexParameterf_impl;
+	qglTexParameterfv            = glTexParameterfv_impl;
+	qglTexSubImage2D             = glTexSubImage2D_impl;
+	qglTranslatef                = glTranslatef_impl;
+	qglVertex2f                  = glVertex2f_impl;
+	qglVertex3f                  = glVertex3f_impl;
+	qglVertex3fv                 = glVertex3fv_impl;
+	qglVertexPointer             = glVertexPointer_impl;
+	qglViewport                  = glViewport_impl;
 
 	qwglCopyContext             = wglCopyContext;
 	qwglCreateContext           = wglCreateContext;
