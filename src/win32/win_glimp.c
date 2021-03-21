@@ -704,28 +704,6 @@ static rserr_t GLW_SetMode( const char *drivername,
 	glw_state.desktopHeight = GetDeviceCaps( hDC, VERTRES );
 	ReleaseDC( GetDesktopWindow(), hDC );
 
-	//
-	// verify desktop bit depth
-	//
-	if ( glConfig.driverType != GLDRV_VOODOO ) {
-		if ( glw_state.desktopBitsPixel < 15 || glw_state.desktopBitsPixel == 24 ) {
-			if ( colorbits == 0 || ( !cdsFullscreen && colorbits >= 15 ) ) {
-				if ( MessageBox( NULL,
-								 "It is highly unlikely that a correct\n"
-								 "windowed display can be initialized with\n"
-								 "the current desktop display depth.  Select\n"
-								 "'OK' to try anyway.  Press 'Cancel' if you\n"
-								 "have a 3Dfx Voodoo, Voodoo-2, or Voodoo Rush\n"
-								 "3D accelerator installed, or if you otherwise\n"
-								 "wish to quit.",
-								 "Low Desktop Color Depth",
-								 MB_OKCANCEL | MB_ICONEXCLAMATION ) != IDOK ) {
-					return RSERR_INVALID_MODE;
-				}
-			}
-		}
-	}
-
 	// do a CDS if needed
 	if ( cdsFullscreen ) {
 		memset( &dm, 0, sizeof( dm ) );
@@ -984,7 +962,7 @@ static void GLW_InitExtensions( void ) {
 	}
 
 	// GL_EXT_compiled_vertex_array
-	if ( strstr( glConfig.extensions_string, "GL_EXT_compiled_vertex_array" ) && ( glConfig.hardwareType != GLHW_RIVA128 ) ) {
+	if ( strstr( glConfig.extensions_string, "GL_EXT_compiled_vertex_array" ) ) {
 		if ( r_ext_compiled_vertex_array->integer ) {
 			ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
 			qglLockArraysEXT = ( void ( APIENTRY * )( int, int ) )qwglGetProcAddress( "glLockArraysEXT" );
@@ -1108,35 +1086,12 @@ static qboolean GLW_LoadOpenGL( const char *drivername ) {
 	Q_strncpyz( buffer, drivername, sizeof( buffer ) );
 	Q_strlwr( buffer );
 
-	//
-	// determine if we're on a standalone driver
-	//
-	if ( strstr( buffer, "opengl32" ) != 0 || r_maskMinidriver->integer ) {
-		glConfig.driverType = GLDRV_ICD;
-	} else
-	{
-		glConfig.driverType = GLDRV_STANDALONE;
-
-		ri.Printf( PRINT_ALL, "...assuming '%s' is a standalone driver\n", drivername );
-
-		if ( strstr( buffer, _3DFX_DRIVER_NAME ) ) {
-			glConfig.driverType = GLDRV_VOODOO;
-		}
-	}
-
-	// disable the 3Dfx splash screen
-	_putenv( "FX_GLIDE_NO_SPLASH=0" );
+	glConfig.driverType = GLDRV_ICD;
 
 	//
 	// load the driver and bind our function pointers to it
 	//
 	if ( QGL_Init( buffer ) ) {
-#if 0
-// FIXME: newer 3Dfx drivers means this can go away
-		if ( !Q_stricmp( buffer, _3DFX_DRIVER_NAME ) ) {
-			cdsFullscreen = qfalse;
-		} else
-#endif
 		{
 			cdsFullscreen = r_fullscreen->integer;
 		}
@@ -1157,10 +1112,6 @@ static qboolean GLW_LoadOpenGL( const char *drivername ) {
 			{
 				goto fail;
 			}
-		}
-
-		if ( glConfig.driverType == GLDRV_VOODOO ) {
-			glConfig.isFullscreen = qtrue;
 		}
 
 		return qtrue;
