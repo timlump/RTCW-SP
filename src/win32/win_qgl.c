@@ -46,16 +46,9 @@ int ( WINAPI * qwglGetPixelFormat )( HDC );
 BOOL ( WINAPI * qwglSetPixelFormat )( HDC, int, CONST PIXELFORMATDESCRIPTOR * );
 BOOL ( WINAPI * qwglSwapBuffers )( HDC );
 
-BOOL ( WINAPI * qwglCopyContext )( HGLRC, HGLRC, UINT );
 HGLRC ( WINAPI * qwglCreateContext )( HDC );
-HGLRC ( WINAPI * qwglCreateLayerContext )( HDC, int );
 BOOL ( WINAPI * qwglDeleteContext )( HGLRC );
-HGLRC ( WINAPI * qwglGetCurrentContext )( VOID );
-HDC ( WINAPI * qwglGetCurrentDC )( VOID );
-PROC ( WINAPI * qwglGetProcAddress )( LPCSTR );
 BOOL ( WINAPI * qwglMakeCurrent )( HDC, HGLRC );
-BOOL ( WINAPI * qwglShareLists )( HGLRC, HGLRC );
-BOOL ( WINAPI * qwglUseFontBitmaps )( HDC, DWORD, DWORD, DWORD );
 
 BOOL ( WINAPI * qwglUseFontOutlines )( HDC, DWORD, DWORD, DWORD, FLOAT,
 				FLOAT, int, LPGLYPHMETRICSFLOAT );
@@ -601,21 +594,14 @@ void QGL_Shutdown( void ) {
 	qglVertexPointer             = NULL;
 	qglViewport                  = NULL;
 
-	qwglCopyContext              = NULL;
 	qwglCreateContext            = NULL;
-	qwglCreateLayerContext       = NULL;
 	qwglDeleteContext            = NULL;
 	qwglDescribeLayerPlane       = NULL;
-	qwglGetCurrentContext        = NULL;
-	qwglGetCurrentDC             = NULL;
 	qwglGetLayerPaletteEntries   = NULL;
-	qwglGetProcAddress           = NULL;
 	qwglMakeCurrent              = NULL;
 	qwglRealizeLayerPalette      = NULL;
 	qwglSetLayerPaletteEntries   = NULL;
-	qwglShareLists               = NULL;
 	qwglSwapLayerBuffers         = NULL;
-	qwglUseFontBitmaps           = NULL;
 	qwglUseFontOutlines          = NULL;
 
 	qwglChoosePixelFormat        = NULL;
@@ -738,21 +724,14 @@ qboolean QGL_Init( const char *dllname ) {
 	qglVertexPointer             = glVertexPointer_impl;
 	qglViewport                  = glViewport_impl;
 
-	qwglCopyContext             = wglCopyContext;
 	qwglCreateContext           = wglCreateContext;
-	qwglCreateLayerContext      = wglCreateLayerContext;
 	qwglDeleteContext           = wglDeleteContext;
 	qwglDescribeLayerPlane      = wglDescribeLayerPlane;
-	qwglGetCurrentContext       = wglGetCurrentContext;
-	qwglGetCurrentDC            = wglGetCurrentDC;
 	qwglGetLayerPaletteEntries  = wglGetLayerPaletteEntries;
-	qwglGetProcAddress          = wglGetProcAddress;
 	qwglMakeCurrent             = wglMakeCurrent;
 	qwglRealizeLayerPalette     = wglRealizeLayerPalette;
 	qwglSetLayerPaletteEntries  = wglSetLayerPaletteEntries;
-	qwglShareLists              = wglShareLists;
 	qwglSwapLayerBuffers        = wglSwapLayerBuffers;
-	qwglUseFontBitmaps          = wglUseFontBitmapsA;
 	qwglUseFontOutlines         = wglUseFontOutlinesA;
 
 	qwglChoosePixelFormat       = GPA("wglChoosePixelFormat");

@@ -125,6 +125,7 @@ extern void ( APIENTRY * qglColor3f )( GLfloat red, GLfloat green, GLfloat blue 
 extern void ( APIENTRY * qglColor3fv )( const GLfloat *v );
 extern void ( APIENTRY * qglColor3ubv )( const GLubyte *v );
 extern void ( APIENTRY * qglColor4f )( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha );
+extern void (APIENTRY* qglColor4ubv)(const GLubyte* v);
 extern void ( APIENTRY * qglColorMask )( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
 extern void ( APIENTRY * qglColorPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 extern void ( APIENTRY * qglCullFace )( GLenum mode );
@@ -187,16 +188,9 @@ extern int ( WINAPI * qwglGetPixelFormat )( HDC );
 extern BOOL ( WINAPI * qwglSetPixelFormat )( HDC, int, CONST PIXELFORMATDESCRIPTOR * );
 extern BOOL ( WINAPI * qwglSwapBuffers )( HDC );
 
-extern BOOL ( WINAPI * qwglCopyContext )( HGLRC, HGLRC, UINT );
 extern HGLRC ( WINAPI * qwglCreateContext )( HDC );
-extern HGLRC ( WINAPI * qwglCreateLayerContext )( HDC, int );
 extern BOOL ( WINAPI * qwglDeleteContext )( HGLRC );
-extern HGLRC ( WINAPI * qwglGetCurrentContext )( VOID );
-extern HDC ( WINAPI * qwglGetCurrentDC )( VOID );
-extern PROC ( WINAPI * qwglGetProcAddress )( LPCSTR );
 extern BOOL ( WINAPI * qwglMakeCurrent )( HDC, HGLRC );
-extern BOOL ( WINAPI * qwglShareLists )( HGLRC, HGLRC );
-extern BOOL ( WINAPI * qwglUseFontBitmaps )( HDC, DWORD, DWORD, DWORD );
 
 extern BOOL ( WINAPI * qwglUseFontOutlines )( HDC, DWORD, DWORD, DWORD, FLOAT,
 					   FLOAT, int, LPGLYPHMETRICSFLOAT );
