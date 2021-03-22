@@ -250,12 +250,6 @@ void R_ImageList_f( void ) {
 		case GL_RGB8:
 			ri.Printf( PRINT_ALL, "RGB8" );
 			break;
-		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-			ri.Printf( PRINT_ALL, "DXT5 " );
-			break;
-		case GL_RGB4_S3TC:
-			ri.Printf( PRINT_ALL, "S3TC4" );
-			break;
 		case GL_RGBA4:
 			ri.Printf( PRINT_ALL, "RGBA4" );
 			break;
@@ -746,12 +740,7 @@ static void Upload32(   unsigned *data,
 		}
 		// select proper internal format
 		if ( samples == 3 ) {
-			if ( !noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC ) {
-				// TODO: which format is best for which textures?
-				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-			} else if ( !noCompress && glConfig.textureCompression == TC_S3TC )   {
-				internalFormat = GL_RGB4_S3TC;
-			} else if ( r_texturebits->integer == 16 )   {
+			if ( r_texturebits->integer == 16 )   {
 				internalFormat = GL_RGB5;
 			} else if ( r_texturebits->integer == 32 )   {
 				internalFormat = GL_RGB8;
@@ -760,10 +749,7 @@ static void Upload32(   unsigned *data,
 				internalFormat = 3;
 			}
 		} else if ( samples == 4 )   {
-			if ( !noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC ) {
-				// TODO: which format is best for which textures?
-				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-			} else if ( r_texturebits->integer == 16 )   {
+			if ( r_texturebits->integer == 16 )   {
 				internalFormat = GL_RGBA4;
 			} else if ( r_texturebits->integer == 32 )   {
 				internalFormat = GL_RGBA8;
@@ -920,14 +906,8 @@ image_t *R_CreateImageExt( const char *name, const byte *pic, int width, int hei
 	image->wrapClampMode = glWrapClampMode;
 
 	// lightmaps are always allocated on TMU 1
-	if ( qglActiveTextureARB && isLightmap ) {
-		image->TMU = 1;
-	} else {
+	{
 		image->TMU = 0;
-	}
-
-	if ( qglActiveTextureARB ) {
-		GL_SelectTexture( image->TMU );
 	}
 
 	GL_Bind( image );
@@ -2424,12 +2404,7 @@ void R_DeleteTextures( void ) {
 
 	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
 	if ( qglBindTexture ) {
-		if ( qglActiveTextureARB ) {
-			GL_SelectTexture( 1 );
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-			GL_SelectTexture( 0 );
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-		} else {
+		{
 			qglBindTexture( GL_TEXTURE_2D, 0 );
 		}
 	}
@@ -3497,12 +3472,7 @@ void R_PurgeImage( image_t *image ) {
 
 	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
 	if ( qglBindTexture ) {
-		if ( qglActiveTextureARB ) {
-			GL_SelectTexture( 1 );
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-			GL_SelectTexture( 0 );
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-		} else {
+		{
 			qglBindTexture( GL_TEXTURE_2D, 0 );
 		}
 	}
@@ -3575,12 +3545,7 @@ void R_BackupImages( void ) {
 
 	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
 	if ( qglBindTexture ) {
-		if ( qglActiveTextureARB ) {
-			GL_SelectTexture( 1 );
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-			GL_SelectTexture( 0 );
-			qglBindTexture( GL_TEXTURE_2D, 0 );
-		} else {
+		{
 			qglBindTexture( GL_TEXTURE_2D, 0 );
 		}
 	}

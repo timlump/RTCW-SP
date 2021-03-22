@@ -42,8 +42,8 @@ If you have questions concerning this license or the applicable additional terms
 #pragma warning (disable: 4214)
 
 #include <windows.h>
-//#include <GL/GL.h>
-#include <angle_gl.h>
+#include <GL/GL.h>
+//#include <angle_gl.h>
 
 typedef double GLclampd;
 #define GL_LINE                           0x1B01
@@ -62,18 +62,6 @@ typedef double GLclampd;
 
 
 //===========================================================================
-
-/*
-** multitexture extension definitions
-*/
-#define GL_ACTIVE_TEXTURE_ARB               0x84E0
-#define GL_CLIENT_ACTIVE_TEXTURE_ARB        0x84E1
-#define GL_MAX_ACTIVE_TEXTURES_ARB          0x84E2
-
-#define GL_TEXTURE0_ARB                     0x84C0
-#define GL_TEXTURE1_ARB                     0x84C1
-#define GL_TEXTURE2_ARB                     0x84C2
-#define GL_TEXTURE3_ARB                     0x84C3
 
 // TTimo: FIXME
 // linux needs those prototypes
@@ -114,67 +102,6 @@ typedef void ( APIENTRY * PFNGLMULTITEXCOORD4SVARBPROC )( GLenum target, const G
 typedef void ( APIENTRY * PFNGLACTIVETEXTUREARBPROC )( GLenum target );
 typedef void ( APIENTRY * PFNGLCLIENTACTIVETEXTUREARBPROC )( GLenum target );
 #endif
-
-/*
-** extension constants
-*/
-
-// GL_ATI_pn_triangles
-#ifndef GL_ATI_pn_triangles
-#define GL_ATI_pn_triangles 1
-
-// GR - update enumerants
-#define GL_PN_TRIANGLES_ATI                         0x87F0
-#define GL_MAX_PN_TRIANGLES_TESSELATION_LEVEL_ATI   0x87F1
-#define GL_PN_TRIANGLES_POINT_MODE_ATI              0x87F2
-#define GL_PN_TRIANGLES_NORMAL_MODE_ATI             0x87F3
-#define GL_PN_TRIANGLES_TESSELATION_LEVEL_ATI       0x87F4
-#define GL_PN_TRIANGLES_POINT_MODE_LINEAR_ATI       0x87F5
-#define GL_PN_TRIANGLES_POINT_MODE_CUBIC_ATI        0x87F6
-#define GL_PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI      0x87F7
-#define GL_PN_TRIANGLES_NORMAL_MODE_QUADRATIC_ATI   0x87F8
-
-typedef void ( APIENTRY * PFNGLPNTRIANGLESIATIPROC )( GLenum pname, GLint param );
-typedef void ( APIENTRY * PFNGLPNTRIANGLESFATIPROC )( GLenum pname, GLfloat param );
-#endif
-
-// for NV fog distance
-#ifndef GL_NV_fog_distance
-#define GL_FOG_DISTANCE_MODE_NV           0x855A
-#define GL_EYE_RADIAL_NV                  0x855B
-#define GL_EYE_PLANE_ABSOLUTE_NV          0x855C
-/* reuse GL_EYE_PLANE */
-#endif
-
-// S3TC compression constants
-#define GL_RGB_S3TC                         0x83A0
-#define GL_RGB4_S3TC                        0x83A1
-
-// GL_EXT_texture_compression_s3tc constants
-#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT                   0x83F0
-#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT                  0x83F1
-#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT                  0x83F2
-#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT                  0x83F3
-
-// GL_EXT_texture_filter_anisotropic constants
-#ifndef GL_EXT_texture_filter_anisotropic
-#define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
-#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
-#endif
-
-// extensions will be function pointers on all platforms
-
-extern void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
-extern void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
-extern void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
-
-extern void ( APIENTRY * qglLockArraysEXT )( GLint, GLint );
-extern void ( APIENTRY * qglUnlockArraysEXT )( void );
-
-//----(SA)	added
-extern void ( APIENTRY * qglPNTrianglesiATI )( GLenum pname, GLint param );
-extern void ( APIENTRY * qglPNTrianglesfATI )( GLenum pname, GLfloat param );
-//----(SA)	end
 
 //===========================================================================
 // 
@@ -260,9 +187,6 @@ extern int ( WINAPI * qwglGetPixelFormat )( HDC );
 extern BOOL ( WINAPI * qwglSetPixelFormat )( HDC, int, CONST PIXELFORMATDESCRIPTOR * );
 extern BOOL ( WINAPI * qwglSwapBuffers )( HDC );
 
-extern BOOL ( WINAPI * qwglGetDeviceGammaRamp3DFX )( HDC, LPVOID );
-extern BOOL ( WINAPI * qwglSetDeviceGammaRamp3DFX )( HDC, LPVOID );
-
 extern BOOL ( WINAPI * qwglCopyContext )( HGLRC, HGLRC, UINT );
 extern HGLRC ( WINAPI * qwglCreateContext )( HDC );
 extern HGLRC ( WINAPI * qwglCreateLayerContext )( HDC, int );
@@ -286,6 +210,5 @@ extern int ( WINAPI * qwglGetLayerPaletteEntries )( HDC, int, int, int,
 extern BOOL ( WINAPI * qwglRealizeLayerPalette )( HDC, int, BOOL );
 extern BOOL ( WINAPI * qwglSwapLayerBuffers )( HDC, UINT );
 
-extern BOOL ( WINAPI * qwglSwapIntervalEXT )( int interval );
 
 #endif  // _WIN32 && __linux__

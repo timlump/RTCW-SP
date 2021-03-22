@@ -170,9 +170,7 @@ static void R_DrawElements( int numIndexes, const glIndex_t *indexes ) {
 
 	// default is to use triangles if compiled vertex arrays are present
 	if ( primitives == 0 ) {
-		if ( qglLockArraysEXT ) {
-			primitives = 2;
-		} else {
+		{
 			primitives = 1;
 		}
 	}
@@ -274,17 +272,8 @@ static void DrawTris( shaderCommands_t *input ) {
 
 	qglVertexPointer( 3, GL_FLOAT, 16, input->xyz ); // padded for SIMD
 
-	if ( qglLockArraysEXT ) {
-		qglLockArraysEXT( 0, input->numVertexes );
-		GLimp_LogComment( "glLockArraysEXT\n" );
-	}
-
 	R_DrawElements( input->numIndexes, input->indexes );
 
-	if ( qglUnlockArraysEXT ) {
-		qglUnlockArraysEXT();
-		GLimp_LogComment( "glUnlockArraysEXT\n" );
-	}
 	qglDepthRange( 0, 1 );
 }
 
@@ -1268,16 +1257,6 @@ void RB_StageIteratorGeneric( void ) {
 	// set GL fog
 	SetIteratorFog();
 
-	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
-		// RF< so we can send the normals as an array
-		qglEnableClientState( GL_NORMAL_ARRAY );
-#ifdef __MACOS__    //DAJ ATI
-		qglPNTrianglesiATI( GL_PN_TRIANGLES_ATI, 1 );
-#else
-		qglEnable( GL_PN_TRIANGLES_ATI ); // ATI PN-Triangles extension
-#endif
-	}
-
 
 	//
 	// set face culling appropriately
@@ -1311,21 +1290,10 @@ void RB_StageIteratorGeneric( void ) {
 		qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[0] );
 	}
 
-	// RF, send normals only if required
-	// This must be done first, since we can't change the arrays once they have been
-	// locked
-	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
-		qglNormalPointer( GL_FLOAT, 16, input->normal );
-	}
-
 	//
 	// lock XYZ
 	//
 	qglVertexPointer( 3, GL_FLOAT, 16, input->xyz ); // padded for SIMD
-	if ( qglLockArraysEXT ) {
-		qglLockArraysEXT( 0, input->numVertexes );
-		GLimp_LogComment( "glLockArraysEXT\n" );
-	}
 
 	//
 	// enable color and texcoord arrays after the lock if necessary
@@ -1356,28 +1324,10 @@ void RB_StageIteratorGeneric( void ) {
 	}
 
 	//
-	// unlock arrays
-	//
-	if ( qglUnlockArraysEXT ) {
-		qglUnlockArraysEXT();
-		GLimp_LogComment( "glUnlockArraysEXT\n" );
-	}
-
-	//
 	// reset polygon offset
 	//
 	if ( input->shader->polygonOffset ) {
 		qglDisable( GL_POLYGON_OFFSET_FILL );
-	}
-
-	// turn truform back off
-	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
-#ifdef __MACOS__    //DAJ ATI
-		qglPNTrianglesiATI( GL_PN_TRIANGLES_ATI, 0 );
-#else
-		qglDisable( GL_PN_TRIANGLES_ATI );    // ATI PN-Triangles extension
-#endif
-		qglDisableClientState( GL_NORMAL_ARRAY );
 	}
 
 }
@@ -1423,25 +1373,9 @@ void RB_StageIteratorVertexLitTexture( void ) {
 	qglEnableClientState( GL_COLOR_ARRAY );
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
-	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
-#ifdef __MACOS__    //DAJ ATI
-		qglPNTrianglesiATI( GL_PN_TRIANGLES_ATI, 1 );
-#else
-		qglEnable( GL_PN_TRIANGLES_ATI ); // ATI PN-Triangles extension
-#endif
-		qglEnableClientState( GL_NORMAL_ARRAY );         // RF< so we can send the normals as an array
-		qglNormalPointer( GL_FLOAT, 16, input->normal );
-	}
-
 	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
 	qglTexCoordPointer( 2, GL_FLOAT, 16, tess.texCoords[0][0] );
 	qglVertexPointer( 3, GL_FLOAT, 16, input->xyz );
-
-
-	if ( qglLockArraysEXT ) {
-		qglLockArraysEXT( 0, input->numVertexes );
-		GLimp_LogComment( "glLockArraysEXT\n" );
-	}
 
 	//
 	// call special shade routine
@@ -1463,23 +1397,6 @@ void RB_StageIteratorVertexLitTexture( void ) {
 	if ( tess.fogNum && tess.shader->fogPass ) {
 		RB_FogPass();
 	}
-
-	//
-	// unlock arrays
-	//
-	if ( qglUnlockArraysEXT ) {
-		qglUnlockArraysEXT();
-		GLimp_LogComment( "glUnlockArraysEXT\n" );
-	}
-
-	if ( qglPNTrianglesiATI && tess.ATI_tess )
-#ifdef __MACOS__ //DAJ ATI{
-		qglPNTrianglesiATI( GL_PN_TRIANGLES_ATI, 0 );
-	}
-#else
-	{ qglDisable( GL_PN_TRIANGLES_ATI );    // ATI PN-Triangles extension
-	}
-#endif
 }
 
 //define	REPLACE_MODE
@@ -1511,15 +1428,6 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 	//
 	GL_State( GLS_DEFAULT );
 	qglVertexPointer( 3, GL_FLOAT, 16, input->xyz );
-
-	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
-#ifdef __MACOS__    //DAJ ATI
-		qglPNTrianglesiATI( GL_PN_TRIANGLES_ATI, 1 );
-#else
-		qglEnable( GL_PN_TRIANGLES_ATI ); // ATI PN-Triangles extension
-#endif
-		qglNormalPointer( GL_FLOAT, 16, input->normal );
-	}
 
 #ifdef REPLACE_MODE
 	qglDisableClientState( GL_COLOR_ARRAY );
@@ -1560,14 +1468,6 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	qglTexCoordPointer( 2, GL_FLOAT, 16, tess.texCoords[0][1] );
 
-	//
-	// lock arrays
-	//
-	if ( qglLockArraysEXT ) {
-		qglLockArraysEXT( 0, input->numVertexes );
-		GLimp_LogComment( "glLockArraysEXT\n" );
-	}
-
 	R_DrawElements( input->numIndexes, input->indexes );
 
 	//
@@ -1595,23 +1495,6 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 	if ( tess.fogNum && tess.shader->fogPass ) {
 		RB_FogPass();
 	}
-
-	//
-	// unlock arrays
-	//
-	if ( qglUnlockArraysEXT ) {
-		qglUnlockArraysEXT();
-		GLimp_LogComment( "glUnlockArraysEXT\n" );
-	}
-
-	if ( qglPNTrianglesiATI && tess.ATI_tess )
-#ifdef __MACOS__ //DAJ ATI{
-		qglPNTrianglesiATI( GL_PN_TRIANGLES_ATI, 0 );
-	}
-#else
-	{ qglDisable( GL_PN_TRIANGLES_ATI );    // ATI PN-Triangles extension
-	}
-#endif
 }
 
 /*

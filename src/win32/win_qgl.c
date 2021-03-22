@@ -40,10 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../renderer/tr_local.h"
 #include "glw_win.h"
 
-int ( WINAPI * qwglSwapIntervalEXT )( int interval );
-BOOL ( WINAPI * qwglGetDeviceGammaRamp3DFX )( HDC, LPVOID );
-BOOL ( WINAPI * qwglSetDeviceGammaRamp3DFX )( HDC, LPVOID );
-
 int ( WINAPI * qwglChoosePixelFormat )( HDC, CONST PIXELFORMATDESCRIPTOR * );
 int ( WINAPI * qwglDescribePixelFormat )( HDC, int, UINT, LPPIXELFORMATDESCRIPTOR );
 int ( WINAPI * qwglGetPixelFormat )( HDC );
@@ -764,19 +760,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qwglGetPixelFormat          = GPA("wglGetPixelFormat");
 	qwglSetPixelFormat          = GPA("wglSetPixelFormat");
 	qwglSwapBuffers             = GPA("wglSwapBuffers");
-
-	qwglSwapIntervalEXT         = 0;
-	qglActiveTextureARB         = 0;
-	qglClientActiveTextureARB   = 0;
-	qglMultiTexCoord2fARB       = 0;
-	qglLockArraysEXT            = 0;
-	qglUnlockArraysEXT          = 0;
-
-	qglPNTrianglesiATI          = 0;    // ATI truform
-	qglPNTrianglesfATI          = 0;    // ATI truform
-
-	qwglGetDeviceGammaRamp3DFX  = NULL;
-	qwglSetDeviceGammaRamp3DFX  = NULL;
 
 	return qtrue;
 }
