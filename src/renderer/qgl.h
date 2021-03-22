@@ -182,9 +182,7 @@ extern void ( APIENTRY * qglVertex3fv )( const GLfloat *v );
 extern void ( APIENTRY * qglVertexPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 extern void ( APIENTRY * qglViewport )( GLint x, GLint y, GLsizei width, GLsizei height );
 
-extern int ( WINAPI * qwglChoosePixelFormat )( HDC, CONST PIXELFORMATDESCRIPTOR * );
 extern int ( WINAPI * qwglDescribePixelFormat )( HDC, int, UINT, LPPIXELFORMATDESCRIPTOR );
-extern int ( WINAPI * qwglGetPixelFormat )( HDC );
 extern BOOL ( WINAPI * qwglSetPixelFormat )( HDC, int, CONST PIXELFORMATDESCRIPTOR * );
 extern BOOL ( WINAPI * qwglSwapBuffers )( HDC );
 
@@ -192,17 +190,6 @@ extern HGLRC ( WINAPI * qwglCreateContext )( HDC );
 extern BOOL ( WINAPI * qwglDeleteContext )( HGLRC );
 extern BOOL ( WINAPI * qwglMakeCurrent )( HDC, HGLRC );
 
-extern BOOL ( WINAPI * qwglUseFontOutlines )( HDC, DWORD, DWORD, DWORD, FLOAT,
-					   FLOAT, int, LPGLYPHMETRICSFLOAT );
-
-extern BOOL ( WINAPI * qwglDescribeLayerPlane )( HDC, int, int, UINT,
-					   LPLAYERPLANEDESCRIPTOR );
-extern int ( WINAPI * qwglSetLayerPaletteEntries )( HDC, int, int, int,
-													CONST COLORREF * );
-extern int ( WINAPI * qwglGetLayerPaletteEntries )( HDC, int, int, int,
-					  COLORREF * );
-extern BOOL ( WINAPI * qwglRealizeLayerPalette )( HDC, int, BOOL );
-extern BOOL ( WINAPI * qwglSwapLayerBuffers )( HDC, UINT );
 
 
 #endif  // _WIN32 && __linux__

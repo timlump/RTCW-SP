@@ -40,27 +40,13 @@ If you have questions concerning this license or the applicable additional terms
 #include "../renderer/tr_local.h"
 #include "glw_win.h"
 
-int ( WINAPI * qwglChoosePixelFormat )( HDC, CONST PIXELFORMATDESCRIPTOR * );
 int ( WINAPI * qwglDescribePixelFormat )( HDC, int, UINT, LPPIXELFORMATDESCRIPTOR );
-int ( WINAPI * qwglGetPixelFormat )( HDC );
 BOOL ( WINAPI * qwglSetPixelFormat )( HDC, int, CONST PIXELFORMATDESCRIPTOR * );
 BOOL ( WINAPI * qwglSwapBuffers )( HDC );
 
 HGLRC ( WINAPI * qwglCreateContext )( HDC );
 BOOL ( WINAPI * qwglDeleteContext )( HGLRC );
 BOOL ( WINAPI * qwglMakeCurrent )( HDC, HGLRC );
-
-BOOL ( WINAPI * qwglUseFontOutlines )( HDC, DWORD, DWORD, DWORD, FLOAT,
-				FLOAT, int, LPGLYPHMETRICSFLOAT );
-
-BOOL ( WINAPI * qwglDescribeLayerPlane )( HDC, int, int, UINT,
-				LPLAYERPLANEDESCRIPTOR );
-int ( WINAPI * qwglSetLayerPaletteEntries )( HDC, int, int, int,
-											 CONST COLORREF * );
-int ( WINAPI * qwglGetLayerPaletteEntries )( HDC, int, int, int,
-			   COLORREF * );
-BOOL ( WINAPI * qwglRealizeLayerPalette )( HDC, int, BOOL );
-BOOL ( WINAPI * qwglSwapLayerBuffers )( HDC, UINT );
 
 void ( APIENTRY * qglAlphaFunc )( GLenum func, GLclampf ref );
 void ( APIENTRY * qglArrayElement )( GLint i );
@@ -596,17 +582,9 @@ void QGL_Shutdown( void ) {
 
 	qwglCreateContext            = NULL;
 	qwglDeleteContext            = NULL;
-	qwglDescribeLayerPlane       = NULL;
-	qwglGetLayerPaletteEntries   = NULL;
 	qwglMakeCurrent              = NULL;
-	qwglRealizeLayerPalette      = NULL;
-	qwglSetLayerPaletteEntries   = NULL;
-	qwglSwapLayerBuffers         = NULL;
-	qwglUseFontOutlines          = NULL;
 
-	qwglChoosePixelFormat        = NULL;
 	qwglDescribePixelFormat      = NULL;
-	qwglGetPixelFormat           = NULL;
 	qwglSetPixelFormat           = NULL;
 	qwglSwapBuffers              = NULL;
 }
@@ -726,17 +704,9 @@ qboolean QGL_Init( const char *dllname ) {
 
 	qwglCreateContext           = wglCreateContext;
 	qwglDeleteContext           = wglDeleteContext;
-	qwglDescribeLayerPlane      = wglDescribeLayerPlane;
-	qwglGetLayerPaletteEntries  = wglGetLayerPaletteEntries;
 	qwglMakeCurrent             = wglMakeCurrent;
-	qwglRealizeLayerPalette     = wglRealizeLayerPalette;
-	qwglSetLayerPaletteEntries  = wglSetLayerPaletteEntries;
-	qwglSwapLayerBuffers        = wglSwapLayerBuffers;
-	qwglUseFontOutlines         = wglUseFontOutlinesA;
 
-	qwglChoosePixelFormat       = GPA("wglChoosePixelFormat");
 	qwglDescribePixelFormat     = GPA("wglDescribePixelFormat");
-	qwglGetPixelFormat          = GPA("wglGetPixelFormat");
 	qwglSetPixelFormat          = GPA("wglSetPixelFormat");
 	qwglSwapBuffers             = GPA("wglSwapBuffers");
 
