@@ -318,15 +318,6 @@ static void GLW_CreatePFD( PIXELFORMATDESCRIPTOR *pPFD, int colorbits, int depth
 	src.cDepthBits = depthbits;
 	src.cStencilBits = stencilbits;
 
-	if ( stereo ) {
-		ri.Printf( PRINT_ALL, "...attempting to use stereo\n" );
-		src.dwFlags |= PFD_STEREO;
-		glConfig.stereoEnabled = qtrue;
-	} else
-	{
-		glConfig.stereoEnabled = qfalse;
-	}
-
 	*pPFD = src;
 }
 
@@ -493,14 +484,6 @@ static qboolean GLW_InitDriver( const char *drivername, int colorbits ) {
 
 				return qfalse;
 			}
-		}
-
-		/*
-		** report if stereo is desired but unavailable
-		*/
-		if ( !( pfd.dwFlags & PFD_STEREO ) && ( r_stereo->integer != 0 ) ) {
-			ri.Printf( PRINT_ALL, "...failed to select stereo pixel format\n" );
-			glConfig.stereoEnabled = qfalse;
 		}
 	}
 
@@ -1132,7 +1115,7 @@ void GLimp_EndFrame( void ) {
 	if ( r_swapInterval->modified ) {
 		r_swapInterval->modified = qfalse;
 
-		if ( !glConfig.stereoEnabled ) {    // why?
+		{    // why?
 			if ( qwglSwapIntervalEXT ) {
 				qwglSwapIntervalEXT( r_swapInterval->integer );
 			}

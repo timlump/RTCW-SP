@@ -306,7 +306,6 @@ typedef struct {
 	// a Voodoo or Voodoo2 will have this set to TRUE, as will a Win32 ICD that
 	// used CDS.
 	qboolean isFullscreen;
-	qboolean stereoEnabled;
 	qboolean smpActive;                     // dual processor
 
 	qboolean textureFilterAnisotropicAvailable;                 //DAJ

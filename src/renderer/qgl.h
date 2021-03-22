@@ -33,11 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __QGL_H__
 #define __QGL_H__
 
-#if defined( __LINT__ )
-
-#include <GL/gl.h>
-
-#elif defined( _WIN32 )
 
 #pragma warning (disable: 4201)
 #pragma warning (disable: 4214)
@@ -47,37 +42,16 @@ If you have questions concerning this license or the applicable additional terms
 #pragma warning (disable: 4214)
 
 #include <windows.h>
-#include <GL/GL.h>
-//#include <angle_gl.h>
-//typedef double GLclampd;
+//#include <GL/GL.h>
+#include <angle_gl.h>
 
-#elif defined( MACOS_X )
-
-#include "macosx_glimp.h"
-
-#elif defined( __linux__ )
-
-#include <GL/gl.h>
-#include <GL/glx.h>
-// bk001129 - from cvs1.17 (mkv)
-#if defined( __FX__ )
-#include <GL/fxmesa.h>
-#endif
-
-#elif defined( __FreeBSD__ ) // rb010123
-
-#include <GL/gl.h>
-#include <GL/glx.h>
-#if defined( __FX__ )
-#include <GL/fxmesa.h>
-#endif
-
-#else
-
-#include <gl.h>
-
-#endif
-
+typedef double GLclampd;
+#define GL_LINE                           0x1B01
+#define GL_FILL                           0x1B02
+#define GL_RGB5                           0x8050
+#define GL_CLAMP                          0x2900
+#define GL_EYE_PLANE                      0x2502
+#define GL_POLYGON                        0x0009
 
 #ifndef APIENTRY
 #define APIENTRY
@@ -203,18 +177,7 @@ extern void ( APIENTRY * qglPNTrianglesfATI )( GLenum pname, GLfloat param );
 //----(SA)	end
 
 //===========================================================================
-
-// non-windows systems will just redefine qgl* to gl*
-#if !defined( _WIN32 ) && !defined( MACOS_X ) && !defined( __linux__ ) && !defined( __FreeBSD__ ) // rb010123
-
-#include "qgl_linked.h"
-
-#elif defined( MACOS_X )
-// This includes #ifdefs for optional logging and GL error checking after every GL call as well as #defines to prevent incorrect usage of the non-'qgl' versions of the GL API.
-#include "macosx_qgl.h"
-
-#else
-
+// 
 // windows systems use a function pointer for each call so we can load minidrivers
 
 extern void ( APIENTRY * qglAlphaFunc )( GLenum func, GLclampf ref );
@@ -291,8 +254,6 @@ extern void ( APIENTRY * qglVertex3fv )( const GLfloat *v );
 extern void ( APIENTRY * qglVertexPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 extern void ( APIENTRY * qglViewport )( GLint x, GLint y, GLsizei width, GLsizei height );
 
-#if defined( _WIN32 )
-
 extern int ( WINAPI * qwglChoosePixelFormat )( HDC, CONST PIXELFORMATDESCRIPTOR * );
 extern int ( WINAPI * qwglDescribePixelFormat )( HDC, int, UINT, LPPIXELFORMATDESCRIPTOR );
 extern int ( WINAPI * qwglGetPixelFormat )( HDC );
@@ -327,31 +288,4 @@ extern BOOL ( WINAPI * qwglSwapLayerBuffers )( HDC, UINT );
 
 extern BOOL ( WINAPI * qwglSwapIntervalEXT )( int interval );
 
-#endif  // _WIN32
-
-#if ( ( defined __linux__ )  || ( defined __FreeBSD__ ) ) // rb010123
-
-//FX Mesa Functions
-// bk001129 - from cvs1.17 (mkv)
-#if defined ( __FX__ )
-extern fxMesaContext ( *qfxMesaCreateContext )( GLuint win, GrScreenResolution_t, GrScreenRefresh_t, const GLint attribList[] );
-extern fxMesaContext ( *qfxMesaCreateBestContext )( GLuint win, GLint width, GLint height, const GLint attribList[] );
-extern void ( *qfxMesaDestroyContext )( fxMesaContext ctx );
-extern void ( *qfxMesaMakeCurrent )( fxMesaContext ctx );
-extern fxMesaContext ( *qfxMesaGetCurrentContext )( void );
-extern void ( *qfxMesaSwapBuffers )( void );
-#endif
-
-//GLX Functions
-extern XVisualInfo * ( *qglXChooseVisual )( Display * dpy, int screen, int *attribList );
-extern GLXContext ( *qglXCreateContext )( Display *dpy, XVisualInfo *vis, GLXContext shareList, Bool direct );
-extern void ( *qglXDestroyContext )( Display *dpy, GLXContext ctx );
-extern Bool ( *qglXMakeCurrent )( Display *dpy, GLXDrawable drawable, GLXContext ctx );
-extern void ( *qglXCopyContext )( Display *dpy, GLXContext src, GLXContext dst, GLuint mask );
-extern void ( *qglXSwapBuffers )( Display *dpy, GLXDrawable drawable );
-
-#endif // __linux__ || __FreeBSD__ // rb010123
-
 #endif  // _WIN32 && __linux__
-
-#endif
