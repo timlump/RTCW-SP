@@ -51,7 +51,7 @@ struct {
 	bool enabled;
 	int size;
 	int stride;
-	unsigned char* ptr;
+	uint8_t* ptr;
 } color_pointer;
 
 struct {
@@ -159,26 +159,29 @@ void glArrayElement_impl(GLint i)
 {
 	if (vertex_pointer.enabled)
 	{
-		int element_size = (sizeof(float) * vertex_pointer.size) + vertex_pointer.stride;
-		sgl_v3f(vertex_pointer.ptr[i * element_size],
-				vertex_pointer.ptr[(i + 1) * element_size],
-				vertex_pointer.ptr[(i + 2) * element_size]);
+		int idx = i * vertex_pointer.stride;
+		float x = vertex_pointer.ptr[idx];
+		float y = vertex_pointer.ptr[idx + 1];
+		float z = vertex_pointer.ptr[idx + 2];
+		sgl_v3f(x, y, z);
 	}
 
 	if (color_pointer.enabled)
 	{
-		int element_size = (sizeof(unsigned char) * color_pointer.size) + color_pointer.stride;
-		sgl_c4b(color_pointer.ptr[i * element_size],
-			color_pointer.ptr[(i + 1) * element_size],
-			color_pointer.ptr[(i + 2) * element_size],
-			color_pointer.ptr[(i + 3) * element_size]);
+		int idx = i * color_pointer.stride;
+		uint8_t r = color_pointer.ptr[idx];
+		uint8_t g = color_pointer.ptr[idx + 1];
+		uint8_t b = color_pointer.ptr[idx + 2];
+		uint8_t a = color_pointer.ptr[idx + 3];
+		sgl_c4b(r, g, b, a);
 	}
 
 	if (texcoord_pointer.enabled)
 	{
-		int element_size = (sizeof(float) * texcoord_pointer.size) + texcoord_pointer.stride;
-		sgl_t2f(texcoord_pointer.ptr[i * element_size],
-				texcoord_pointer.ptr[(i + 1) * element_size]);
+		int idx = i * texcoord_pointer.stride;
+		float u = texcoord_pointer.ptr[idx];
+		float v = texcoord_pointer.ptr[idx + 1];
+		sgl_t2f(u, v);
 	}
 
 	glArrayElement(i);
@@ -303,7 +306,7 @@ void glColorMask_impl(GLboolean red, GLboolean green, GLboolean blue, GLboolean 
 void glColorPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
 	color_pointer.size = size;
-	color_pointer.stride = stride;
+	color_pointer.stride = stride / sizeof(uint8_t);
 	color_pointer.ptr = pointer;
 
 	glColorPointer(size, type, stride, pointer);
@@ -312,7 +315,7 @@ void glColorPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* 
 void glVertexPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
 	vertex_pointer.size = size;
-	vertex_pointer.stride = stride;
+	vertex_pointer.stride = stride / sizeof(float);
 	vertex_pointer.ptr = pointer;
 
 	glVertexPointer(size, type, stride, pointer);
@@ -321,7 +324,7 @@ void glVertexPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid*
 void glTexCoordPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
 	texcoord_pointer.size = size;
-	texcoord_pointer.stride = stride;
+	texcoord_pointer.stride = stride / sizeof(float);
 	texcoord_pointer.ptr = pointer;
 	glTexCoordPointer(size, type, stride, pointer);
 }
