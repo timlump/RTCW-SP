@@ -47,6 +47,27 @@ If you have questions concerning this license or the applicable additional terms
 #include <util/sokol_gl.h>
 #include <sokol_app.h>
 
+struct {
+	bool enabled;
+	int size;
+	int stride;
+	unsigned char* ptr;
+} color_pointer;
+
+struct {
+	bool enabled;
+	int size;
+	int stride;
+	float* ptr;
+} vertex_pointer;
+
+struct {
+	bool enabled;
+	int size;
+	int stride;
+	float* ptr;
+} texcoord_pointer;
+
 int ( WINAPI * qwglDescribePixelFormat )( HDC, int, UINT, LPPIXELFORMATDESCRIPTOR );
 BOOL ( WINAPI * qwglSetPixelFormat )( HDC, int, CONST PIXELFORMATDESCRIPTOR * );
 BOOL ( WINAPI * qwglSwapBuffers )( HDC );
@@ -136,6 +157,28 @@ void glAlphaFunc_impl(GLenum func, GLclampf ref)
 
 void glArrayElement_impl(GLint i)
 {
+	if (vertex_pointer.enabled)
+	{
+		int element_size = (sizeof(float) * vertex_pointer.size) + vertex_pointer.stride;
+		sgl_v3f(vertex_pointer.ptr[i * element_size],
+				vertex_pointer.ptr[(i + 1) * element_size],
+				vertex_pointer.ptr[(i + 2) * element_size]);
+	}
+
+	if (color_pointer.enabled)
+	{
+		int element_size = (sizeof(unsigned char) * color_pointer.size) + color_pointer.stride;
+		sgl_c4b(color_pointer.ptr[i * element_size],
+			color_pointer.ptr[(i + 1) * element_size],
+			color_pointer.ptr[(i + 2) * element_size],
+			color_pointer.ptr[(i + 3) * element_size]);
+	}
+
+	if (texcoord_pointer.enabled)
+	{
+
+	}
+
 	glArrayElement(i);
 }
 
@@ -257,7 +300,28 @@ void glColorMask_impl(GLboolean red, GLboolean green, GLboolean blue, GLboolean 
 
 void glColorPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
+	color_pointer.size = size;
+	color_pointer.stride = stride;
+	color_pointer.ptr = pointer;
+
 	glColorPointer(size, type, stride, pointer);
+}
+
+void glVertexPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
+{
+	vertex_pointer.size = size;
+	vertex_pointer.stride = stride;
+	vertex_pointer.ptr = pointer;
+
+	glVertexPointer(size, type, stride, pointer);
+}
+
+void glTexCoordPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
+{
+	texcoord_pointer.size = size;
+	texcoord_pointer.stride = stride;
+	texcoord_pointer.ptr = pointer;
+	glTexCoordPointer(size, type, stride, pointer);
 }
 
 void glCullFace_impl(GLenum mode)
@@ -292,6 +356,18 @@ void glDisable_impl(GLenum cap)
 
 void glDisableClientState_impl(GLenum _array)
 {
+	switch (_array) {
+	case GL_COLOR_ARRAY:
+		color_pointer.enabled = false;
+		break;
+	case GL_TEXTURE_COORD_ARRAY:
+		texcoord_pointer.enabled = false;
+		break;
+
+	case GL_VERTEX_ARRAY:
+		vertex_pointer.enabled = false;
+		break;
+	}
 	glDisableClientState(_array);
 }
 
@@ -312,6 +388,18 @@ void glEnable_impl(GLenum cap)
 
 void glEnableClientState_impl(GLenum _array)
 {
+	switch (_array) {
+	case GL_COLOR_ARRAY:
+		color_pointer.enabled = true;
+		break;
+	case GL_TEXTURE_COORD_ARRAY:
+		texcoord_pointer.enabled = true;
+		break;
+
+	case GL_VERTEX_ARRAY:
+		vertex_pointer.enabled = true;
+		break;
+	}
 	glEnableClientState(_array);
 }
 
@@ -481,11 +569,6 @@ void glTexCoord2fv_impl(const GLfloat* v)
 	glTexCoord3fv(v);
 }
 
-void glTexCoordPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
-{
-	glTexCoordPointer(size, type, stride, pointer);
-}
-
 void glTexEnvf_impl(GLenum target, GLenum pname, GLfloat param)
 {
 	glTexEnvf(target, pname, param);
@@ -533,11 +616,6 @@ void glVertex3fv_impl(const GLfloat* v)
 {
 	sgl_v3f(v[0], v[1], v[2]);
 	glVertex3fv(v);
-}
-
-void glVertexPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
-{
-	glVertexPointer(size, type, stride, pointer);
 }
 
 void glViewport_impl(GLint x, GLint y, GLsizei width, GLsizei height)
@@ -676,6 +754,10 @@ qboolean QGL_Init( const char *dllname ) {
 		memset(&pipeline_desc, 0, sizeof(sg_pipeline_desc));
 		pip_3d = sgl_make_pipeline(&pipeline_desc);
 	}
+
+	vertex_pointer.enabled = false;
+	color_pointer.enabled = false;
+	texcoord_pointer.enabled = false;
 
 	char systemDir[1024];
 	char libName[1024];

@@ -1330,8 +1330,8 @@ void frame_cb()
 
 sapp_desc sokol_main(int argc, char* argv[]) {
 	return (sapp_desc) {
-		.width = 1024,
-		.height = 768,
+		.width = 640,
+		.height = 480,
 		.init_cb = init_cb,
 		.frame_cb = frame_cb
 	};
