@@ -387,10 +387,10 @@ void glMatrixMode_impl(GLenum mode)
 {
 	switch (mode) {
 	case GL_PROJECTION:
-		sgl_matrix_mode_projection;
+		sgl_matrix_mode_projection();
 		break;
 	case GL_MODELVIEW:
-		sgl_matrix_mode_modelview;
+		sgl_matrix_mode_modelview();
 		break;
 	}
 	glMatrixMode(mode);
