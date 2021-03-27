@@ -43,7 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <windows.h>
 #include <GL/GL.h>
-//#include <angle_gl.h>
+
 
 typedef double GLclampd;
 #define GL_LINE                           0x1B01

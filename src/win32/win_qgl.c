@@ -40,6 +40,13 @@ If you have questions concerning this license or the applicable additional terms
 #include "../renderer/tr_local.h"
 #include "glw_win.h"
 
+#define SOKOL_IMPL
+#define SOKOL_GL_IMPL
+#define SOKOL_D3D11
+#include <sokol_gfx.h>
+#include <util/sokol_gl.h>
+#include <sokol_app.h>
+
 int ( WINAPI * qwglDescribePixelFormat )( HDC, int, UINT, LPPIXELFORMATDESCRIPTOR );
 BOOL ( WINAPI * qwglSetPixelFormat )( HDC, int, CONST PIXELFORMATDESCRIPTOR * );
 BOOL ( WINAPI * qwglSwapBuffers )( HDC );
@@ -134,6 +141,27 @@ void glArrayElement_impl(GLint i)
 
 void glBegin_impl(GLenum mode)
 {
+	switch (mode) {
+	case GL_LINES:
+		sgl_begin_lines();
+		break;
+	case GL_LINE_STRIP:
+		sgl_begin_line_strip();
+		break;
+	case GL_LINE_LOOP:
+	case GL_QUADS:
+		sgl_begin_quads();
+		break;
+	case GL_POLYGON:
+		sgl_begin_triangles();
+		break;
+	case GL_TRIANGLE_STRIP:
+		sgl_begin_triangle_strip();
+		break;
+	case GL_POINTS:
+		sgl_begin_points();
+		break;
+	}
 	glBegin(mode);
 }
 
@@ -194,26 +222,31 @@ void glClipPlane_impl(GLenum plane, const GLdouble* equation)
 
 void glColor3f_impl(GLfloat red, GLfloat green, GLfloat blue)
 {
+	sgl_c3f(red, green, blue);
 	glColor3f(red, green, blue);
 }
 
 void glColor3fv_impl(const GLfloat* v)
 {
+	sgl_c3f(v[0], v[1], v[2]);
 	glColor3fv(v);
 }
 
 void glColor3ubv_impl(const GLubyte* v)
 {
+	sgl_c3b(v[0], v[1], v[2]);
 	glColor3ubv(v);
 }
 
 void glColor4f_impl(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 {
+	sgl_c4f(red, green, blue, alpha);
 	glColor4f(red, green, blue, alpha);
 }
 
 void glColor4ubv_impl(const GLubyte* v)
 {
+	sgl_c4b(v[0], v[1], v[2], v[3]);
 	glColor4ubv(v);
 }
 
@@ -284,6 +317,7 @@ void glEnableClientState_impl(GLenum _array)
 
 void glEnd_impl(void)
 {
+	sgl_end();
 	glEnd();
 }
 
@@ -339,16 +373,26 @@ void glLineWidth_impl(GLfloat width)
 
 void glLoadIdentity_impl(void)
 {
+	sgl_load_identity();
 	glLoadIdentity();
 }
 
 void glLoadMatrixf_impl(const GLfloat* m)
 {
+	sgl_load_matrix(m);
 	glLoadMatrixf(m);
 }
 
 void glMatrixMode_impl(GLenum mode)
 {
+	switch (mode) {
+	case GL_PROJECTION:
+		sgl_matrix_mode_projection;
+		break;
+	case GL_MODELVIEW:
+		sgl_matrix_mode_modelview;
+		break;
+	}
 	glMatrixMode(mode);
 }
 
@@ -379,11 +423,13 @@ void glPolygonOffset_impl(GLfloat factor, GLfloat units)
 
 void glPopMatrix_impl(void)
 {
+	sgl_pop_matrix();
 	glPopMatrix();
 }
 
 void glPushMatrix_impl(void)
 {
+	sgl_push_matrix();
 	glPushMatrix();
 }
 
@@ -399,6 +445,7 @@ void glReadPixels_impl(GLint x, GLint y, GLsizei width, GLsizei height, GLenum f
 
 void glScissor_impl(GLint x, GLint y, GLsizei width, GLsizei height)
 {
+	sgl_scissor_rect(x, y, width, height, true);
 	glScissor(x, y, width, height);
 }
 
@@ -424,11 +471,13 @@ void glStencilOp_impl(GLenum fail, GLenum zfail, GLenum zpass)
 
 void glTexCoord2f_impl(GLfloat s, GLfloat t)
 {
+	sgl_t2f(s, t);
 	glTexCoord2f(s, t);
 }
 
 void glTexCoord2fv_impl(const GLfloat* v)
 {
+	sgl_t2f(v[0], v[1]);
 	glTexCoord3fv(v);
 }
 
@@ -464,21 +513,25 @@ void glTexSubImage2D_impl(GLenum target, GLint level, GLint xoffset, GLint yoffs
 
 void glTranslatef_impl(GLfloat x, GLfloat y, GLfloat z)
 {
+	sgl_translate(x, y, z);
 	glTranslatef(x, y, z);
 }
 
 void glVertex2f_impl(GLfloat x, GLfloat y)
 {
+	sgl_v2f(x, y);
 	glVertex2f(x, y);
 }
 
 void glVertex3f_impl(GLfloat x, GLfloat y, GLfloat z)
 {
+	sgl_v3f(x, y, z);
 	glVertex3f(x, y, z);
 }
 
 void glVertex3fv_impl(const GLfloat* v)
 {
+	sgl_v3f(v[0], v[1], v[2]);
 	glVertex3fv(v);
 }
 
@@ -499,6 +552,8 @@ void glViewport_impl(GLint x, GLint y, GLsizei width, GLsizei height)
 ** is only called during a hard shutdown of the OGL subsystem (e.g. vid_restart).
 */
 void QGL_Shutdown( void ) {
+
+	sgl_shutdown();
 	ri.Printf( PRINT_ALL, "...shutting down QGL\n" );
 
 	if ( glw_state.hinstOpenGL ) {
@@ -603,7 +658,25 @@ void QGL_Shutdown( void ) {
 ** operating systems we need to do the right thing, whatever that
 ** might be.
 */
+static sgl_pipeline pip_3d;
 qboolean QGL_Init( const char *dllname ) {
+	sg_desc desc;
+	memset(&desc, 0, sizeof(desc));
+	desc.d3d11_device = sapp_d3d11_get_device();
+	desc.d3d11_device_context = sapp_d3d11_get_device_context();
+	desc.d3d11_depth_stencil_view_cb = sapp_d3d11_get_depth_stencil_view;
+	desc.d3d11_render_target_view_cb = sapp_d3d11_get_render_target_view;
+	sg_setup(&desc);
+	sgl_desc_t sgl_desc;
+	memset(&sgl_desc, 0, sizeof(sgl_desc_t));
+	sgl_setup(&sgl_desc);
+
+	{
+		sg_pipeline_desc pipeline_desc;
+		memset(&pipeline_desc, 0, sizeof(sg_pipeline_desc));
+		pip_3d = sgl_make_pipeline(&pipeline_desc);
+	}
+
 	char systemDir[1024];
 	char libName[1024];
 

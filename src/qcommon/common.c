@@ -2277,10 +2277,6 @@ void Com_Frame( void ) {
 	int timeBeforeClient;
 	int timeAfter;
 
-
-
-
-
 	if ( setjmp( abortframe ) ) {
 		return;         // an ERR_DROP was thrown
 	}
