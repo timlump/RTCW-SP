@@ -176,7 +176,9 @@ void glArrayElement_impl(GLint i)
 
 	if (texcoord_pointer.enabled)
 	{
-
+		int element_size = (sizeof(float) * texcoord_pointer.size) + texcoord_pointer.stride;
+		sgl_t2f(texcoord_pointer.ptr[i * element_size],
+				texcoord_pointer.ptr[(i + 1) * element_size]);
 	}
 
 	glArrayElement(i);
