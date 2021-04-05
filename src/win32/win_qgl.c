@@ -47,26 +47,44 @@ If you have questions concerning this license or the applicable additional terms
 #include <util/sokol_gl.h>
 #include <sokol_app.h>
 
-struct {
-	bool enabled;
-	int size;
-	int stride;
-	uint8_t* ptr;
-} color_pointer;
+struct
+{
+	struct {
+		bool enabled;
+		int size;
+		int stride;
+		uint8_t* ptr;
+	} color_pointer;
 
-struct {
-	bool enabled;
-	int size;
-	int stride;
-	float* ptr;
-} vertex_pointer;
+	struct {
+		bool enabled;
+		int size;
+		int stride;
+		float* ptr;
+	} vertex_pointer;
 
-struct {
-	bool enabled;
-	int size;
-	int stride;
-	float* ptr;
-} texcoord_pointer;
+	struct {
+		bool enabled;
+		int size;
+		int stride;
+		float* ptr;
+	} texcoord_pointer;
+
+	sgl_pipeline pipeline;
+	sg_pipeline_desc pipeline_params;
+	enum {e_cull_front, e_cull_back} cull_mode;
+	
+} state;
+
+#define MAX_TEX 1024
+int current_texture = 0;
+typedef struct tex_info
+{
+	bool in_use;
+	sg_image texture;
+} tex_info;
+
+tex_info textures[MAX_TEX];
 
 int ( WINAPI * qwglDescribePixelFormat )( HDC, int, UINT, LPPIXELFORMATDESCRIPTOR );
 BOOL ( WINAPI * qwglSetPixelFormat )( HDC, int, CONST PIXELFORMATDESCRIPTOR * );
@@ -157,30 +175,30 @@ void glAlphaFunc_impl(GLenum func, GLclampf ref)
 
 void glArrayElement_impl(GLint i)
 {
-	if (vertex_pointer.enabled)
+	if (state.vertex_pointer.enabled)
 	{
-		int idx = i * vertex_pointer.stride;
-		float x = vertex_pointer.ptr[idx];
-		float y = vertex_pointer.ptr[idx + 1];
-		float z = vertex_pointer.ptr[idx + 2];
+		int idx = i * state.vertex_pointer.stride;
+		float x = state.vertex_pointer.ptr[idx];
+		float y = state.vertex_pointer.ptr[idx + 1];
+		float z = state.vertex_pointer.ptr[idx + 2];
 		sgl_v3f(x, y, z);
 	}
 
-	if (color_pointer.enabled)
+	if (state.color_pointer.enabled)
 	{
-		int idx = i * color_pointer.stride;
-		uint8_t r = color_pointer.ptr[idx];
-		uint8_t g = color_pointer.ptr[idx + 1];
-		uint8_t b = color_pointer.ptr[idx + 2];
-		uint8_t a = color_pointer.ptr[idx + 3];
+		int idx = i * state.color_pointer.stride;
+		uint8_t r = state.color_pointer.ptr[idx];
+		uint8_t g = state.color_pointer.ptr[idx + 1];
+		uint8_t b = state.color_pointer.ptr[idx + 2];
+		uint8_t a = state.color_pointer.ptr[idx + 3];
 		sgl_c4b(r, g, b, a);
 	}
 
-	if (texcoord_pointer.enabled)
+	if (state.texcoord_pointer.enabled)
 	{
-		int idx = i * texcoord_pointer.stride;
-		float u = texcoord_pointer.ptr[idx];
-		float v = texcoord_pointer.ptr[idx + 1];
+		int idx = i * state.texcoord_pointer.stride;
+		float u = state.texcoord_pointer.ptr[idx];
+		float v = state.texcoord_pointer.ptr[idx + 1];
 		sgl_t2f(u, v);
 	}
 
@@ -189,6 +207,10 @@ void glArrayElement_impl(GLint i)
 
 void glBegin_impl(GLenum mode)
 {
+	if (textures[current_texture].in_use) {
+		sgl_texture(textures[current_texture].texture);
+	}
+
 	switch (mode) {
 	case GL_LINES:
 		sgl_begin_lines();
@@ -210,11 +232,14 @@ void glBegin_impl(GLenum mode)
 		sgl_begin_points();
 		break;
 	}
+
 	glBegin(mode);
 }
 
 void glBindTexture_impl(GLenum target, GLuint texture)
 {
+	current_texture = texture - 1024;
+
 	glBindTexture(target, texture);
 }
 
@@ -305,32 +330,42 @@ void glColorMask_impl(GLboolean red, GLboolean green, GLboolean blue, GLboolean 
 
 void glColorPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
-	color_pointer.size = size;
-	color_pointer.stride = stride / sizeof(uint8_t);
-	color_pointer.ptr = pointer;
+	state.color_pointer.size = size;
+	state.color_pointer.stride = stride / sizeof(uint8_t);
+	state.color_pointer.ptr = pointer;
 
 	glColorPointer(size, type, stride, pointer);
 }
 
 void glVertexPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
-	vertex_pointer.size = size;
-	vertex_pointer.stride = stride / sizeof(float);
-	vertex_pointer.ptr = pointer;
+	state.vertex_pointer.size = size;
+	state.vertex_pointer.stride = stride / sizeof(float);
+	state.vertex_pointer.ptr = pointer;
 
 	glVertexPointer(size, type, stride, pointer);
 }
 
 void glTexCoordPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
-	texcoord_pointer.size = size;
-	texcoord_pointer.stride = stride / sizeof(float);
-	texcoord_pointer.ptr = pointer;
+	state.texcoord_pointer.size = size;
+	state.texcoord_pointer.stride = stride / sizeof(float);
+	state.texcoord_pointer.ptr = pointer;
+
 	glTexCoordPointer(size, type, stride, pointer);
 }
 
 void glCullFace_impl(GLenum mode)
 {
+	switch (mode) {
+	case GL_FRONT:
+		state.cull_mode = e_cull_front;
+		break;
+	case GL_BACK:
+		state.cull_mode = e_cull_back;
+		break;
+	}
+
 	glCullFace(mode);
 }
 
@@ -356,6 +391,11 @@ void glDepthRange_impl(GLclampd zNear, GLclampd zFar)
 
 void glDisable_impl(GLenum cap)
 {
+	switch (cap) {
+	case GL_TEXTURE_2D:
+		sgl_disable_texture();
+		break;
+	}
 	glDisable(cap);
 }
 
@@ -363,14 +403,14 @@ void glDisableClientState_impl(GLenum _array)
 {
 	switch (_array) {
 	case GL_COLOR_ARRAY:
-		color_pointer.enabled = false;
+		state.color_pointer.enabled = false;
 		break;
 	case GL_TEXTURE_COORD_ARRAY:
-		texcoord_pointer.enabled = false;
+		state.texcoord_pointer.enabled = false;
 		break;
 
 	case GL_VERTEX_ARRAY:
-		vertex_pointer.enabled = false;
+		state.vertex_pointer.enabled = false;
 		break;
 	}
 	glDisableClientState(_array);
@@ -388,6 +428,11 @@ void glDrawElements_impl(GLenum mode, GLsizei count, GLenum type, const GLvoid* 
 
 void glEnable_impl(GLenum cap)
 {
+	switch (cap) {
+	case GL_TEXTURE_2D:
+		sgl_enable_texture();
+		break;
+	}
 	glEnable(cap);
 }
 
@@ -395,14 +440,14 @@ void glEnableClientState_impl(GLenum _array)
 {
 	switch (_array) {
 	case GL_COLOR_ARRAY:
-		color_pointer.enabled = true;
+		state.color_pointer.enabled = true;
 		break;
 	case GL_TEXTURE_COORD_ARRAY:
-		texcoord_pointer.enabled = true;
+		state.texcoord_pointer.enabled = true;
 		break;
 
 	case GL_VERTEX_ARRAY:
-		vertex_pointer.enabled = true;
+		state.vertex_pointer.enabled = true;
 		break;
 	}
 	glEnableClientState(_array);
@@ -496,6 +541,7 @@ void glNormalPointer_impl(GLenum type, GLsizei stride, const GLvoid* pointer)
 
 void glOrtho_impl(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar)
 {
+	sgl_ortho(left, right, bottom, top, zNear, zFar);
 	glOrtho(left, right, bottom, top, zNear, zFar);
 }
 
@@ -581,6 +627,27 @@ void glTexEnvf_impl(GLenum target, GLenum pname, GLfloat param)
 
 void glTexImage2D_impl(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels)
 {
+	if (textures[current_texture].in_use) {
+		sg_destroy_image(textures[current_texture].texture);
+	}
+
+	{
+		textures[current_texture].in_use = true;
+
+		sg_image_desc desc;
+		memset(&desc, 0, sizeof(sg_image_desc));
+		desc.pixel_format = SG_PIXELFORMAT_RGBA8;
+		desc.min_filter = SG_FILTER_NEAREST_MIPMAP_LINEAR;
+		desc.mag_filter = SG_FILTER_LINEAR;
+		desc.wrap_u = SG_WRAP_REPEAT;
+		desc.wrap_v = SG_WRAP_REPEAT;
+		desc.width = width;
+		desc.height = height;
+		desc.content.subimage[0][0].ptr = pixels;
+		desc.content.subimage[0][0].size = width * height * 4;
+		textures[current_texture].texture = sg_make_image(&desc);
+	}
+
 	glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 }
 
@@ -625,6 +692,7 @@ void glVertex3fv_impl(const GLfloat* v)
 
 void glViewport_impl(GLint x, GLint y, GLsizei width, GLsizei height)
 {
+	sgl_viewport(x, y, width, height, false);
 	glViewport(x, y, width, height);
 }
 
@@ -731,7 +799,6 @@ void QGL_Shutdown( void ) {
 
 #   pragma warning (disable : 4113 4133 4047 )
 #   define GPA( a ) GetProcAddress( glw_state.hinstOpenGL, a )
-
 /*
 ** QGL_Init
 **
@@ -741,28 +808,24 @@ void QGL_Shutdown( void ) {
 ** operating systems we need to do the right thing, whatever that
 ** might be.
 */
-static sgl_pipeline pip_3d;
 qboolean QGL_Init( const char *dllname ) {
-	sg_desc desc;
-	memset(&desc, 0, sizeof(desc));
-	desc.d3d11_device = sapp_d3d11_get_device();
-	desc.d3d11_device_context = sapp_d3d11_get_device_context();
-	desc.d3d11_depth_stencil_view_cb = sapp_d3d11_get_depth_stencil_view;
-	desc.d3d11_render_target_view_cb = sapp_d3d11_get_render_target_view;
-	sg_setup(&desc);
-	sgl_desc_t sgl_desc;
-	memset(&sgl_desc, 0, sizeof(sgl_desc_t));
-	sgl_setup(&sgl_desc);
-
 	{
-		sg_pipeline_desc pipeline_desc;
-		memset(&pipeline_desc, 0, sizeof(sg_pipeline_desc));
-		pip_3d = sgl_make_pipeline(&pipeline_desc);
+		sg_desc desc;
+		memset(&desc, 0, sizeof(desc));
+		desc.d3d11_device = sapp_d3d11_get_device();
+		desc.d3d11_device_context = sapp_d3d11_get_device_context();
+		desc.d3d11_depth_stencil_view_cb = sapp_d3d11_get_depth_stencil_view;
+		desc.d3d11_render_target_view_cb = sapp_d3d11_get_render_target_view;
+		sg_setup(&desc);
+		sgl_desc_t sgl_desc;
+		memset(&sgl_desc, 0, sizeof(sgl_desc_t));
+		sgl_setup(&sgl_desc);
 	}
 
-	vertex_pointer.enabled = false;
-	color_pointer.enabled = false;
-	texcoord_pointer.enabled = false;
+	memset(&state, 0, sizeof(state));
+	
+	state.pipeline = sgl_make_pipeline(&state.pipeline_params);
+	sgl_load_pipeline(state.pipeline);
 
 	char systemDir[1024];
 	char libName[1024];
