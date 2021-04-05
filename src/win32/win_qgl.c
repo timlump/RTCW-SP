@@ -47,6 +47,20 @@ If you have questions concerning this license or the applicable additional terms
 #include <util/sokol_gl.h>
 #include <sokol_app.h>
 
+sgl_pipeline pipeline;
+sg_pipeline_desc pipeline_params;
+
+#define TEXTURES_ENABLED 1
+#define DEPTH_TEST_ENABLED 1 << 1
+#define SCISSOR_TEST_ENABLED 1 << 2
+#define CULLING_ENABLED 1 << 3
+#define BLENDING_ENABLED 1 << 4
+#define FOG_ENABLED 1 << 5
+#define CLIPPING_PLANE_ENABLED 1 << 6
+#define STENCIL_TEST_ENABLED 1 << 7
+#define ALPHA_TEST_ENABLED 1 << 8
+#define POLYGON_OFFSET_FILL_ENABLED 1 << 9
+
 struct
 {
 	struct {
@@ -70,10 +84,8 @@ struct
 		float* ptr;
 	} texcoord_pointer;
 
-	sgl_pipeline pipeline;
-	sg_pipeline_desc pipeline_params;
 	enum {e_cull_front, e_cull_back} cull_mode;
-	
+	unsigned int render_flags;
 } state;
 
 #define MAX_TEX 1024
@@ -207,6 +219,46 @@ void glArrayElement_impl(GLint i)
 
 void glBegin_impl(GLenum mode)
 {
+	unsigned int current_render_flags = state.render_flags;
+	// remove textures and scissor test flag as they are always active
+	current_render_flags &= ~(unsigned int)(TEXTURES_ENABLED);
+	current_render_flags &= ~(unsigned int)(SCISSOR_TEST_ENABLED);
+
+	switch (current_render_flags) {
+	case DEPTH_TEST_ENABLED :
+		break;
+	case BLENDING_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | FOG_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | BLENDING_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | CULLING_ENABLED:
+		break;
+	case BLENDING_ENABLED | CULLING_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | CULLING_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | CULLING_ENABLED | FOG_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | CULLING_ENABLED | FOG_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | FOG_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED  | FOG_ENABLED | ALPHA_TEST_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | FOG_ENABLED | ALPHA_TEST_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | CULLING_ENABLED | FOG_ENABLED | POLYGON_OFFSET_FILL_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | CULLING_ENABLED | POLYGON_OFFSET_FILL_ENABLED:
+		break;
+	case DEPTH_TEST_ENABLED | CULLING_ENABLED | FOG_ENABLED | ALPHA_TEST_ENABLED:
+		break;
+	default:
+		assert(0);
+	}
+
 	if (textures[current_texture].in_use) {
 		sgl_texture(textures[current_texture].texture);
 	}
@@ -389,33 +441,6 @@ void glDepthRange_impl(GLclampd zNear, GLclampd zFar)
 	glDepthRange(zNear, zFar);
 }
 
-void glDisable_impl(GLenum cap)
-{
-	switch (cap) {
-	case GL_TEXTURE_2D:
-		sgl_disable_texture();
-		break;
-	}
-	glDisable(cap);
-}
-
-void glDisableClientState_impl(GLenum _array)
-{
-	switch (_array) {
-	case GL_COLOR_ARRAY:
-		state.color_pointer.enabled = false;
-		break;
-	case GL_TEXTURE_COORD_ARRAY:
-		state.texcoord_pointer.enabled = false;
-		break;
-
-	case GL_VERTEX_ARRAY:
-		state.vertex_pointer.enabled = false;
-		break;
-	}
-	glDisableClientState(_array);
-}
-
 void glDrawBuffer_impl(GLenum mode)
 {
 	glDrawBuffer(mode);
@@ -428,12 +453,85 @@ void glDrawElements_impl(GLenum mode, GLsizei count, GLenum type, const GLvoid* 
 
 void glEnable_impl(GLenum cap)
 {
+	unsigned int current_flag = 0;
 	switch (cap) {
 	case GL_TEXTURE_2D:
-		sgl_enable_texture();
+		current_flag = TEXTURES_ENABLED;
 		break;
+	case GL_DEPTH_TEST:
+		current_flag = DEPTH_TEST_ENABLED;
+		break;
+	case GL_SCISSOR_TEST:
+		current_flag = SCISSOR_TEST_ENABLED;
+		break;
+	case GL_CULL_FACE:
+		current_flag = CULLING_ENABLED;
+		break;
+	case GL_BLEND:
+		current_flag = BLENDING_ENABLED;
+		break; 
+	case GL_FOG:
+		current_flag = FOG_ENABLED;
+		break;
+	case GL_CLIP_PLANE0:
+		current_flag = CLIPPING_PLANE_ENABLED;
+		break;
+	case GL_STENCIL_TEST:
+		current_flag = STENCIL_TEST_ENABLED;
+		break;
+	case GL_ALPHA_TEST:
+		current_flag = ALPHA_TEST_ENABLED;
+		break;
+	case GL_POLYGON_OFFSET_FILL:
+		current_flag = POLYGON_OFFSET_FILL_ENABLED;
+		break;
+	default:
+		assert(0);
 	}
+	state.render_flags |= current_flag;
 	glEnable(cap);
+}
+
+void glDisable_impl(GLenum cap)
+{
+	unsigned int current_flag = 0;
+	switch (cap) {
+	case GL_TEXTURE_2D:
+		current_flag = TEXTURES_ENABLED;
+		break;
+	case GL_DEPTH_TEST:
+		current_flag = DEPTH_TEST_ENABLED;
+		break;
+	case GL_SCISSOR_TEST:
+		current_flag = SCISSOR_TEST_ENABLED;
+		break;
+	case GL_CULL_FACE:
+		current_flag = CULLING_ENABLED;
+		break;
+	case GL_BLEND:
+		current_flag = BLENDING_ENABLED;
+		break;
+	case GL_FOG:
+		current_flag = FOG_ENABLED;
+		break;
+	case GL_CLIP_PLANE0:
+		current_flag = CLIPPING_PLANE_ENABLED;
+		break;
+	case GL_STENCIL_TEST:
+		current_flag = STENCIL_TEST_ENABLED;
+		break;
+	case GL_ALPHA_TEST:
+		current_flag = ALPHA_TEST_ENABLED;
+		break;
+	case GL_POLYGON_OFFSET_FILL:
+		current_flag = POLYGON_OFFSET_FILL_ENABLED;
+		break;
+	default:
+		assert(0);
+	}
+	unsigned int mask = ~current_flag;
+	state.render_flags &= mask;
+	glDisable(cap);
 }
 
 void glEnableClientState_impl(GLenum _array)
@@ -451,6 +549,23 @@ void glEnableClientState_impl(GLenum _array)
 		break;
 	}
 	glEnableClientState(_array);
+}
+
+void glDisableClientState_impl(GLenum _array)
+{
+	switch (_array) {
+	case GL_COLOR_ARRAY:
+		state.color_pointer.enabled = false;
+		break;
+	case GL_TEXTURE_COORD_ARRAY:
+		state.texcoord_pointer.enabled = false;
+		break;
+
+	case GL_VERTEX_ARRAY:
+		state.vertex_pointer.enabled = false;
+		break;
+	}
+	glDisableClientState(_array);
 }
 
 void glEnd_impl(void)
@@ -824,8 +939,8 @@ qboolean QGL_Init( const char *dllname ) {
 
 	memset(&state, 0, sizeof(state));
 	
-	state.pipeline = sgl_make_pipeline(&state.pipeline_params);
-	sgl_load_pipeline(state.pipeline);
+	pipeline = sgl_make_pipeline(&pipeline_params);
+	sgl_load_pipeline(pipeline);
 
 	char systemDir[1024];
 	char libName[1024];
