@@ -47,9 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 #include <util/sokol_gl.h>
 #include <sokol_app.h>
 
-sgl_pipeline pipeline;
-sg_pipeline_desc pipeline_params;
-
 #define TEXTURES_ENABLED 1
 #define DEPTH_TEST_ENABLED 1 << 1
 #define SCISSOR_TEST_ENABLED 1 << 2
@@ -60,6 +57,8 @@ sg_pipeline_desc pipeline_params;
 #define STENCIL_TEST_ENABLED 1 << 7
 #define ALPHA_TEST_ENABLED 1 << 8
 #define POLYGON_OFFSET_FILL_ENABLED 1 << 9
+
+sg_pass_action clear_action;
 
 struct
 {
@@ -84,7 +83,9 @@ struct
 		float* ptr;
 	} texcoord_pointer;
 
-	enum {e_cull_front, e_cull_back} cull_mode;
+	sg_cull_mode cull_mode;
+	sg_blend_factor sfactor;
+	sg_blend_factor dfactor;
 	unsigned int render_flags;
 } state;
 
@@ -220,40 +221,25 @@ void glArrayElement_impl(GLint i)
 void glBegin_impl(GLenum mode)
 {
 	unsigned int current_render_flags = state.render_flags;
+
 	// remove textures and scissor test flag as they are always active
 	current_render_flags &= ~(unsigned int)(TEXTURES_ENABLED);
 	current_render_flags &= ~(unsigned int)(SCISSOR_TEST_ENABLED);
 
+	// remove fog as we aren't implementing it at the moment
+	current_render_flags &= ~(unsigned int)(FOG_ENABLED);
+
 	switch (current_render_flags) {
-	case DEPTH_TEST_ENABLED :
-		break;
 	case BLENDING_ENABLED:
-		break;
-	case DEPTH_TEST_ENABLED | FOG_ENABLED:
-		break;
-	case DEPTH_TEST_ENABLED | BLENDING_ENABLED:
-		break;
-	case DEPTH_TEST_ENABLED | CULLING_ENABLED:
-		break;
+	case DEPTH_TEST_ENABLED:
 	case BLENDING_ENABLED | CULLING_ENABLED:
-		break;
+	case DEPTH_TEST_ENABLED | BLENDING_ENABLED:
+	case DEPTH_TEST_ENABLED | CULLING_ENABLED:
+	case DEPTH_TEST_ENABLED | ALPHA_TEST_ENABLED:
 	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | CULLING_ENABLED:
-		break;
-	case DEPTH_TEST_ENABLED | CULLING_ENABLED | FOG_ENABLED:
-		break;
-	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | CULLING_ENABLED | FOG_ENABLED:
-		break;
-	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | FOG_ENABLED:
-		break;
-	case DEPTH_TEST_ENABLED  | FOG_ENABLED | ALPHA_TEST_ENABLED:
-		break;
-	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | FOG_ENABLED | ALPHA_TEST_ENABLED:
-		break;
-	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | CULLING_ENABLED | FOG_ENABLED | POLYGON_OFFSET_FILL_ENABLED:
-		break;
+	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | ALPHA_TEST_ENABLED:
+	case DEPTH_TEST_ENABLED | CULLING_ENABLED | ALPHA_TEST_ENABLED:
 	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | CULLING_ENABLED | POLYGON_OFFSET_FILL_ENABLED:
-		break;
-	case DEPTH_TEST_ENABLED | CULLING_ENABLED | FOG_ENABLED | ALPHA_TEST_ENABLED:
 		break;
 	default:
 		assert(0);
@@ -300,8 +286,44 @@ void glBitmap_impl(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, 
 	glBitmap(width, height, xorig, yorig, xmove, ymove, bitmap);
 }
 
+sg_blend_factor gl_to_sgl_blend_factor(GLenum factor) {
+	sg_blend_factor result = SG_BLENDFACTOR_ONE;
+
+	switch (factor) {
+	case GL_SRC_ALPHA:
+		result = SG_BLENDFACTOR_SRC_ALPHA;
+		break;
+	case GL_ONE_MINUS_SRC_ALPHA:
+		result = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+		break;
+	case GL_DST_COLOR:
+		result = SG_BLENDFACTOR_DST_COLOR;
+		break;
+	case GL_ONE_MINUS_SRC_COLOR:
+		result = SG_BLENDFACTOR_ONE_MINUS_SRC_COLOR;
+		break;
+	case GL_ONE_MINUS_DST_ALPHA:
+		result = SG_BLENDFACTOR_ONE_MINUS_DST_ALPHA;
+		break;
+	case GL_ZERO:
+		result = SG_BLENDFACTOR_ZERO;
+		break;
+	case GL_ONE:
+		result = SG_BLENDFACTOR_ONE;
+		break;
+
+	default:
+		assert(0);
+	}
+
+	return result;
+}
+
 void glBlendFunc_impl(GLenum sfactor, GLenum dfactor)
 {
+	state.sfactor = gl_to_sgl_blend_factor(sfactor);
+	state.dfactor = gl_to_sgl_blend_factor(dfactor);
+
 	glBlendFunc(sfactor, dfactor);
 }
 
@@ -322,11 +344,16 @@ void glClear_impl(GLbitfield mask)
 
 void glClearColor_impl(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
 {
+	clear_action.colors[0].val[0] = red;
+	clear_action.colors[0].val[1] = blue;
+	clear_action.colors[0].val[2] = green;
+	clear_action.colors[0].val[3] = alpha;
 	glClearColor(red, green, blue, alpha);
 }
 
 void glClearDepth_impl(GLclampd depth)
 {
+	clear_action.depth.val = depth;
 	glClearDepth(depth);
 }
 
@@ -337,6 +364,7 @@ void glClearIndex_impl(GLfloat c)
 
 void glClearStencil_impl(GLint s)
 {
+	clear_action.stencil.val = s;
 	glClearStencil(s);
 }
 
@@ -411,10 +439,10 @@ void glCullFace_impl(GLenum mode)
 {
 	switch (mode) {
 	case GL_FRONT:
-		state.cull_mode = e_cull_front;
+		state.cull_mode = SG_CULLMODE_FRONT;
 		break;
 	case GL_BACK:
-		state.cull_mode = e_cull_back;
+		state.cull_mode = SG_CULLMODE_BACK;
 		break;
 	}
 
@@ -937,10 +965,21 @@ qboolean QGL_Init( const char *dllname ) {
 		sgl_setup(&sgl_desc);
 	}
 
+	{
+		memset(&clear_action, 0, sizeof(sg_pass_action));
+		clear_action.colors[0].action = SG_ACTION_CLEAR;
+		clear_action.colors[0].val[0] = 0.f;
+		clear_action.colors[0].val[1] = 0.f;
+		clear_action.colors[0].val[2] = 0.f;
+		clear_action.colors[0].val[3] = 1.f;
+		clear_action.depth.action = SG_ACTION_CLEAR;
+		clear_action.depth.val = 1.f;
+		clear_action.stencil.action = SG_ACTION_CLEAR;
+		clear_action.stencil.val = 0;
+	}
+
 	memset(&state, 0, sizeof(state));
-	
-	pipeline = sgl_make_pipeline(&pipeline_params);
-	sgl_load_pipeline(pipeline);
+	sgl_default_pipeline();
 
 	char systemDir[1024];
 	char libName[1024];

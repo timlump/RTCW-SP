@@ -1279,7 +1279,7 @@ WinMain
 
 ==================
 */
-sg_pass_action pass_action;
+extern sg_pass_action clear_action;
 void init_cb()
 {
 	// done before Com/Sys_Init since we need this for error output
@@ -1303,15 +1303,6 @@ void init_cb()
 	}
 
 	SetFocus(g_wv.hWnd);
-
-	{
-		memset(&pass_action, 0, sizeof(sg_pass_action));
-		pass_action.colors[0].action = SG_ACTION_CLEAR;
-		pass_action.colors[0].val[0] = 0.f;
-		pass_action.colors[0].val[0] = 0.f;
-		pass_action.colors[0].val[0] = 0.f;
-		pass_action.colors[0].val[0] = 1.f;
-	}
 }
 
 void frame_cb()
@@ -1322,7 +1313,7 @@ void frame_cb()
 	// run the game
 	Com_Frame();
 
-	sg_begin_default_pass(&pass_action, sapp_width(), sapp_height());
+	sg_begin_default_pass(&clear_action, sapp_width(), sapp_height());
 	sgl_draw();
 	sg_end_pass();
 	sg_commit();
