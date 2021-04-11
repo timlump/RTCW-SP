@@ -60,44 +60,34 @@ If you have questions concerning this license or the applicable additional terms
 
 sg_pass_action clear_action;
 
-struct
+struct {
+	bool enabled;
+	int size;
+	int stride;
+	uint8_t* ptr;
+} color_pointer;
+
+struct {
+	bool enabled;
+	int size;
+	int stride;
+	float* ptr;
+} vertex_pointer;
+
+struct {
+	bool enabled;
+	int size;
+	int stride;
+	float* ptr;
+} texcoord_pointer;
+
+struct 
 {
-	struct {
-		bool enabled;
-		int size;
-		int stride;
-		uint8_t* ptr;
-	} color_pointer;
-
-	struct {
-		bool enabled;
-		int size;
-		int stride;
-		float* ptr;
-	} vertex_pointer;
-
-	struct {
-		bool enabled;
-		int size;
-		int stride;
-		float* ptr;
-	} texcoord_pointer;
-
 	sg_cull_mode cull_mode;
 	sg_blend_factor sfactor;
 	sg_blend_factor dfactor;
 	unsigned int render_flags;
 } state;
-
-#define MAX_TEX 1024
-int current_texture = 0;
-typedef struct tex_info
-{
-	bool in_use;
-	sg_image texture;
-} tex_info;
-
-tex_info textures[MAX_TEX];
 
 int ( WINAPI * qwglDescribePixelFormat )( HDC, int, UINT, LPPIXELFORMATDESCRIPTOR );
 BOOL ( WINAPI * qwglSetPixelFormat )( HDC, int, CONST PIXELFORMATDESCRIPTOR * );
@@ -113,8 +103,6 @@ void ( APIENTRY * qglBegin )( GLenum mode );
 void ( APIENTRY * qglBindTexture )( GLenum target, GLuint texture );
 void ( APIENTRY * qglBitmap )( GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, const GLubyte *bitmap );
 void ( APIENTRY * qglBlendFunc )( GLenum sfactor, GLenum dfactor );
-void ( APIENTRY * qglCallList )( GLuint list );
-void ( APIENTRY * qglCallLists )( GLsizei n, GLenum type, const GLvoid *lists );
 void ( APIENTRY * qglClear )( GLbitfield mask );
 void ( APIENTRY * qglClearColor )( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha );
 void ( APIENTRY * qglClearDepth )( GLclampd depth );
@@ -147,25 +135,17 @@ void ( APIENTRY * qglGetFloatv )( GLenum pname, GLfloat *params );
 void ( APIENTRY * qglGetIntegerv )( GLenum pname, GLint *params );
 const GLubyte * ( APIENTRY * qglGetString )(GLenum name);
 void ( APIENTRY * qglHint )( GLenum target, GLenum mode );
-void ( APIENTRY * qglLineWidth )( GLfloat width );
 void ( APIENTRY * qglLoadIdentity )( void );
 void ( APIENTRY * qglLoadMatrixf )( const GLfloat *m );
 void ( APIENTRY * qglMatrixMode )( GLenum mode );
 
-void ( APIENTRY * qglNormalPointer )( GLenum type, GLsizei stride, const GLvoid *pointer );
 void ( APIENTRY * qglOrtho )( GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar );
-void ( APIENTRY * qglPointSize )( GLfloat size );
 void ( APIENTRY * qglPolygonMode )( GLenum face, GLenum mode );
 void ( APIENTRY * qglPolygonOffset )( GLfloat factor, GLfloat units );
 void ( APIENTRY * qglPopMatrix )( void );
 void ( APIENTRY * qglPushMatrix )( void );
 void ( APIENTRY * qglRasterPos3fv )( const GLfloat *v );
 void ( APIENTRY * qglReadPixels )( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels );
-void ( APIENTRY * qglScissor )( GLint x, GLint y, GLsizei width, GLsizei height );
-void ( APIENTRY * qglShadeModel )( GLenum mode );
-void ( APIENTRY * qglStencilFunc )( GLenum func, GLint ref, GLuint mask );
-void ( APIENTRY * qglStencilMask )( GLuint mask );
-void ( APIENTRY * qglStencilOp )( GLenum fail, GLenum zfail, GLenum zpass );
 void ( APIENTRY * qglTexCoord2f )( GLfloat s, GLfloat t );
 void ( APIENTRY * qglTexCoord2fv )( const GLfloat *v );
 void ( APIENTRY * qglTexCoordPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
@@ -188,67 +168,39 @@ void glAlphaFunc_impl(GLenum func, GLclampf ref)
 
 void glArrayElement_impl(GLint i)
 {
-	if (state.vertex_pointer.enabled)
+	if (vertex_pointer.enabled)
 	{
-		int idx = i * state.vertex_pointer.stride;
-		float x = state.vertex_pointer.ptr[idx];
-		float y = state.vertex_pointer.ptr[idx + 1];
-		float z = state.vertex_pointer.ptr[idx + 2];
+		int idx = i * vertex_pointer.stride;
+		float x = vertex_pointer.ptr[idx];
+		float y = vertex_pointer.ptr[idx + 1];
+		float z = vertex_pointer.ptr[idx + 2];
 		sgl_v3f(x, y, z);
 	}
 
-	if (state.color_pointer.enabled)
+	if (color_pointer.enabled)
 	{
-		int idx = i * state.color_pointer.stride;
-		uint8_t r = state.color_pointer.ptr[idx];
-		uint8_t g = state.color_pointer.ptr[idx + 1];
-		uint8_t b = state.color_pointer.ptr[idx + 2];
-		uint8_t a = state.color_pointer.ptr[idx + 3];
+		int idx = i * color_pointer.stride;
+		uint8_t r = color_pointer.ptr[idx];
+		uint8_t g = color_pointer.ptr[idx + 1];
+		uint8_t b = color_pointer.ptr[idx + 2];
+		uint8_t a = color_pointer.ptr[idx + 3];
 		sgl_c4b(r, g, b, a);
 	}
 
-	if (state.texcoord_pointer.enabled)
+	if (texcoord_pointer.enabled)
 	{
-		int idx = i * state.texcoord_pointer.stride;
-		float u = state.texcoord_pointer.ptr[idx];
-		float v = state.texcoord_pointer.ptr[idx + 1];
+		int idx = i * texcoord_pointer.stride;
+		float u = texcoord_pointer.ptr[idx];
+		float v = texcoord_pointer.ptr[idx + 1];
 		sgl_t2f(u, v);
 	}
 
 	glArrayElement(i);
 }
 
+sgl_pipeline current_pipeline;
 void glBegin_impl(GLenum mode)
 {
-	unsigned int current_render_flags = state.render_flags;
-
-	// remove textures and scissor test flag as they are always active
-	current_render_flags &= ~(unsigned int)(TEXTURES_ENABLED);
-	current_render_flags &= ~(unsigned int)(SCISSOR_TEST_ENABLED);
-
-	// remove fog as we aren't implementing it at the moment
-	current_render_flags &= ~(unsigned int)(FOG_ENABLED);
-
-	switch (current_render_flags) {
-	case BLENDING_ENABLED:
-	case DEPTH_TEST_ENABLED:
-	case BLENDING_ENABLED | CULLING_ENABLED:
-	case DEPTH_TEST_ENABLED | BLENDING_ENABLED:
-	case DEPTH_TEST_ENABLED | CULLING_ENABLED:
-	case DEPTH_TEST_ENABLED | ALPHA_TEST_ENABLED:
-	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | CULLING_ENABLED:
-	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | ALPHA_TEST_ENABLED:
-	case DEPTH_TEST_ENABLED | CULLING_ENABLED | ALPHA_TEST_ENABLED:
-	case DEPTH_TEST_ENABLED | BLENDING_ENABLED | CULLING_ENABLED | POLYGON_OFFSET_FILL_ENABLED:
-		break;
-	default:
-		assert(0);
-	}
-
-	if (textures[current_texture].in_use) {
-		sgl_texture(textures[current_texture].texture);
-	}
-
 	switch (mode) {
 	case GL_LINES:
 		sgl_begin_lines();
@@ -275,15 +227,13 @@ void glBegin_impl(GLenum mode)
 }
 
 void glBindTexture_impl(GLenum target, GLuint texture)
-{
-	current_texture = texture - 1024;
-
+{ 
 	glBindTexture(target, texture);
 }
 
 void glBitmap_impl(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, const GLubyte* bitmap)
 {
-	glBitmap(width, height, xorig, yorig, xmove, ymove, bitmap);
+	//glBitmap(width, height, xorig, yorig, xmove, ymove, bitmap);
 }
 
 sg_blend_factor gl_to_sgl_blend_factor(GLenum factor) {
@@ -325,16 +275,6 @@ void glBlendFunc_impl(GLenum sfactor, GLenum dfactor)
 	state.dfactor = gl_to_sgl_blend_factor(dfactor);
 
 	glBlendFunc(sfactor, dfactor);
-}
-
-void glCallList_impl(GLuint list)
-{
-	glCallList(list);
-}
-
-void glCallLists_impl(GLsizei n, GLenum type, const GLvoid* lists)
-{
-	glCallLists(n, type, lists);
 }
 
 void glClear_impl(GLbitfield mask)
@@ -410,27 +350,27 @@ void glColorMask_impl(GLboolean red, GLboolean green, GLboolean blue, GLboolean 
 
 void glColorPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
-	state.color_pointer.size = size;
-	state.color_pointer.stride = stride / sizeof(uint8_t);
-	state.color_pointer.ptr = pointer;
+	color_pointer.size = size;
+	color_pointer.stride = stride / sizeof(uint8_t);
+	color_pointer.ptr = pointer;
 
 	glColorPointer(size, type, stride, pointer);
 }
 
 void glVertexPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
-	state.vertex_pointer.size = size;
-	state.vertex_pointer.stride = stride / sizeof(float);
-	state.vertex_pointer.ptr = pointer;
+	vertex_pointer.size = size;
+	vertex_pointer.stride = stride / sizeof(float);
+	vertex_pointer.ptr = pointer;
 
 	glVertexPointer(size, type, stride, pointer);
 }
 
 void glTexCoordPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
-	state.texcoord_pointer.size = size;
-	state.texcoord_pointer.stride = stride / sizeof(float);
-	state.texcoord_pointer.ptr = pointer;
+	texcoord_pointer.size = size;
+	texcoord_pointer.stride = stride / sizeof(float);
+	texcoord_pointer.ptr = pointer;
 
 	glTexCoordPointer(size, type, stride, pointer);
 }
@@ -566,14 +506,14 @@ void glEnableClientState_impl(GLenum _array)
 {
 	switch (_array) {
 	case GL_COLOR_ARRAY:
-		state.color_pointer.enabled = true;
+		color_pointer.enabled = true;
 		break;
 	case GL_TEXTURE_COORD_ARRAY:
-		state.texcoord_pointer.enabled = true;
+		texcoord_pointer.enabled = true;
 		break;
 
 	case GL_VERTEX_ARRAY:
-		state.vertex_pointer.enabled = true;
+		vertex_pointer.enabled = true;
 		break;
 	}
 	glEnableClientState(_array);
@@ -583,14 +523,14 @@ void glDisableClientState_impl(GLenum _array)
 {
 	switch (_array) {
 	case GL_COLOR_ARRAY:
-		state.color_pointer.enabled = false;
+		color_pointer.enabled = false;
 		break;
 	case GL_TEXTURE_COORD_ARRAY:
-		state.texcoord_pointer.enabled = false;
+		texcoord_pointer.enabled = false;
 		break;
 
 	case GL_VERTEX_ARRAY:
-		state.vertex_pointer.enabled = false;
+		vertex_pointer.enabled = false;
 		break;
 	}
 	glDisableClientState(_array);
@@ -647,11 +587,6 @@ void glHint_impl(GLenum target, GLenum mode)
 	glHint(target, mode);
 }
 
-void glLineWidth_impl(GLfloat width)
-{
-	glLineWidth(width);
-}
-
 void glLoadIdentity_impl(void)
 {
 	sgl_load_identity();
@@ -677,20 +612,10 @@ void glMatrixMode_impl(GLenum mode)
 	glMatrixMode(mode);
 }
 
-void glNormalPointer_impl(GLenum type, GLsizei stride, const GLvoid* pointer)
-{
-	glNormalPointer(type, stride, pointer);
-}
-
 void glOrtho_impl(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar)
 {
 	sgl_ortho(left, right, bottom, top, zNear, zFar);
 	glOrtho(left, right, bottom, top, zNear, zFar);
-}
-
-void glPointSize_impl(GLfloat size)
-{
-	glPointSize(size);
 }
 
 void glPolygonMode_impl(GLenum face, GLenum mode)
@@ -725,32 +650,6 @@ void glReadPixels_impl(GLint x, GLint y, GLsizei width, GLsizei height, GLenum f
 	glReadPixels(x, y, width, height, format, type, pixels);
 }
 
-void glScissor_impl(GLint x, GLint y, GLsizei width, GLsizei height)
-{
-	sgl_scissor_rect(x, y, width, height, true);
-	glScissor(x, y, width, height);
-}
-
-void glShadeModel_impl(GLenum mode)
-{
-	glShadeModel(mode);
-}
-
-void glStencilFunc_impl(GLenum func, GLint ref, GLuint mask)
-{
-	glStencilFunc(func, ref, mask);
-}
-
-void glStencilMask_impl(GLuint mask)
-{
-	glStencilMask(mask);
-}
-
-void glStencilOp_impl(GLenum fail, GLenum zfail, GLenum zpass)
-{
-	glStencilOp(fail, zfail, zpass);
-}
-
 void glTexCoord2f_impl(GLfloat s, GLfloat t)
 {
 	sgl_t2f(s, t);
@@ -770,13 +669,7 @@ void glTexEnvf_impl(GLenum target, GLenum pname, GLfloat param)
 
 void glTexImage2D_impl(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels)
 {
-	if (textures[current_texture].in_use) {
-		sg_destroy_image(textures[current_texture].texture);
-	}
-
-	{
-		textures[current_texture].in_use = true;
-
+	/*{
 		sg_image_desc desc;
 		memset(&desc, 0, sizeof(sg_image_desc));
 		desc.pixel_format = SG_PIXELFORMAT_RGBA8;
@@ -788,8 +681,8 @@ void glTexImage2D_impl(GLenum target, GLint level, GLint internalformat, GLsizei
 		desc.height = height;
 		desc.content.subimage[0][0].ptr = pixels;
 		desc.content.subimage[0][0].size = width * height * 4;
-		textures[current_texture].texture = sg_make_image(&desc);
-	}
+		sg_make_image(&desc);
+	}*/
 
 	glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 }
@@ -863,8 +756,6 @@ void QGL_Shutdown( void ) {
 	qglBindTexture               = NULL;
 	qglBitmap                    = NULL;
 	qglBlendFunc                 = NULL;
-	qglCallList                  = NULL;
-	qglCallLists                 = NULL;
 	qglClear                     = NULL;
 	qglClearColor                = NULL;
 	qglClearDepth                = NULL;
@@ -897,24 +788,16 @@ void QGL_Shutdown( void ) {
 	qglGetIntegerv               = NULL;
 	qglGetString                 = NULL;
 	qglHint                      = NULL;
-	qglLineWidth                 = NULL;
 	qglLoadIdentity              = NULL;
 	qglLoadMatrixf               = NULL;
 	qglMatrixMode                = NULL;
-	qglNormalPointer             = NULL;
 	qglOrtho                     = NULL;
-	qglPointSize                 = NULL;
 	qglPolygonMode               = NULL;
 	qglPolygonOffset             = NULL;
 	qglPopMatrix                 = NULL;
 	qglPushMatrix                = NULL;
 	qglRasterPos3fv              = NULL;
 	qglReadPixels                = NULL;
-	qglScissor                   = NULL;
-	qglShadeModel                = NULL;
-	qglStencilFunc               = NULL;
-	qglStencilMask               = NULL;
-	qglStencilOp                 = NULL;
 	qglTexCoord2f                = NULL;
 	qglTexCoord2fv               = NULL;
 	qglTexCoordPointer           = NULL;
@@ -1012,8 +895,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglBindTexture               = glBindTexture_impl;
 	qglBitmap                    = glBitmap_impl;
 	qglBlendFunc                 = glBlendFunc_impl;
-	qglCallList                  = glCallList_impl;
-	qglCallLists                 = glCallLists_impl;
 	qglClear                     = glClear_impl;
 	qglClearColor                = glClearColor_impl;
 	qglClearDepth                = glClearDepth_impl;
@@ -1046,24 +927,16 @@ qboolean QGL_Init( const char *dllname ) {
 	qglGetIntegerv               = glGetIntegerv_impl;
 	qglGetString                 = glGetString_impl;
 	qglHint                      = glHint_impl;
-	qglLineWidth                 = glLineWidth_impl;
 	qglLoadIdentity              = glLoadIdentity_impl;
 	qglLoadMatrixf               = glLoadMatrixf_impl;
 	qglMatrixMode                = glMatrixMode_impl;
-	qglNormalPointer             = glNormalPointer_impl;
 	qglOrtho                     = glOrtho_impl;
-	qglPointSize                 = glPointSize_impl;
 	qglPolygonMode               = glPolygonMode_impl;
 	qglPolygonOffset             = glPolygonOffset_impl;
 	qglPopMatrix                 = glPopMatrix_impl;
 	qglPushMatrix                = glPushMatrix_impl;
 	qglRasterPos3fv              = glRasterPos3fv_impl;
 	qglReadPixels                = glReadPixels_impl;
-	qglScissor                   = glScissor_impl;
-	qglShadeModel                = glShadeModel_impl;
-	qglStencilFunc               = glStencilFunc_impl;
-	qglStencilMask               = glStencilMask_impl;
-	qglStencilOp                 = glStencilOp_impl;
 	qglTexCoord2f                = glTexCoord2f_impl;
 	qglTexCoord2fv               = glTexCoord2fv_impl;
 	qglTexCoordPointer           = glTexCoordPointer_impl;

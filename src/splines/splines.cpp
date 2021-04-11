@@ -105,7 +105,6 @@ idVec3 idSplineList::zero( 0,0,0 );
 
 void glLabeledPoint( idVec3 &color, idVec3 &point, float size, const char *label ) {
 	qglColor3fv( color );
-	qglPointSize( size );
 	qglBegin( GL_POINTS );
 	qglVertex3fv( point );
 	qglEnd();
@@ -114,7 +113,6 @@ void glLabeledPoint( idVec3 &color, idVec3 &point, float size, const char *label
 	v.y += 1;
 	v.z += 1;
 	qglRasterPos3fv( v );
-	qglCallLists( strlen( label ), GL_UNSIGNED_BYTE, label );
 }
 
 
@@ -264,7 +262,6 @@ void idSplineList::draw( bool editMode ) {
 
 
 	qglColor3fv( controlColor );
-	qglPointSize( 5 );
 
 	qglBegin( GL_POINTS );
 	for ( i = 0; i < controlPoints.Num(); i++ ) {
@@ -289,7 +286,6 @@ void idSplineList::draw( bool editMode ) {
 
 	if ( editMode ) {
 		qglColor3fv( segmentColor );
-		qglPointSize( 3 );
 		qglBegin( GL_POINTS );
 		for ( i = 0; i < count; i++ ) {
 			qglVertex3fv( *splinePoints[i] );

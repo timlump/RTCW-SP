@@ -1429,7 +1429,6 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 #ifdef REPLACE_MODE
 	qglDisableClientState( GL_COLOR_ARRAY );
 	qglColor3f( 1, 1, 1 );
-	qglShadeModel( GL_FLAT );
 #else
 	qglEnableClientState( GL_COLOR_ARRAY );
 	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.constantColor255 );
@@ -1476,7 +1475,6 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 	GL_SelectTexture( 0 );
 #ifdef REPLACE_MODE
 	GL_TexEnv( GL_MODULATE );
-	qglShadeModel( GL_SMOOTH );
 #endif
 
 	//

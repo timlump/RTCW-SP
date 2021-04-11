@@ -224,28 +224,21 @@ void RB_ShadowTessEnd( void ) {
 	// don't write to the color buffer
 	qglColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
 
-	qglEnable( GL_STENCIL_TEST );
-	qglStencilFunc( GL_ALWAYS, 1, 255 );
-
 	// mirrors have the culling order reversed
 	if ( backEnd.viewParms.isMirror ) {
 		qglCullFace( GL_FRONT );
-		qglStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
 
 		R_RenderShadowEdges();
 
 		qglCullFace( GL_BACK );
-		qglStencilOp( GL_KEEP, GL_KEEP, GL_DECR );
 
 		R_RenderShadowEdges();
 	} else {
 		qglCullFace( GL_BACK );
-		qglStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
 
 		R_RenderShadowEdges();
 
 		qglCullFace( GL_FRONT );
-		qglStencilOp( GL_KEEP, GL_KEEP, GL_DECR );
 
 		R_RenderShadowEdges();
 	}
@@ -273,8 +266,6 @@ void RB_ShadowFinish( void ) {
 	if ( glConfig.stencilBits < 4 ) {
 		return;
 	}
-	qglEnable( GL_STENCIL_TEST );
-	qglStencilFunc( GL_NOTEQUAL, 0, 255 );
 
 	qglDisable( GL_CLIP_PLANE0 );
 	qglDisable( GL_CULL_FACE );

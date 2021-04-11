@@ -1335,7 +1335,6 @@ void RB_SurfaceAnim( mdsSurface_t *surface ) {
 				bonePtr = &bones[*boneRefs];
 
 				GL_Bind( tr.whiteImage );
-				qglLineWidth( 1 );
 				qglBegin( GL_LINES );
 				for ( j = 0; j < 3; j++ ) {
 					VectorClear( vec );
@@ -1349,15 +1348,12 @@ void RB_SurfaceAnim( mdsSurface_t *surface ) {
 
 				// connect to our parent if it's valid
 				if ( validBones[boneInfo[*boneRefs].parent] ) {
-					qglLineWidth( 2 );
 					qglBegin( GL_LINES );
 					qglColor3f( .6,.6,.6 );
 					qglVertex3fv( bonePtr->translation );
 					qglVertex3fv( bones[boneInfo[*boneRefs].parent].translation );
 					qglEnd();
 				}
-
-				qglLineWidth( 1 );
 			}
 		}
 
@@ -1369,7 +1365,6 @@ void RB_SurfaceAnim( mdsSurface_t *surface ) {
 			tempNormal = ( float * )( tess.normal + baseVertex );
 
 			GL_Bind( tr.whiteImage );
-			qglLineWidth( 1 );
 			qglBegin( GL_LINES );
 			qglColor3f( .0,.0,.8 );
 

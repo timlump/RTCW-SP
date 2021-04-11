@@ -379,12 +379,6 @@ static void SetViewportAndScissor( void ) {
 					backEnd.viewParms.viewportY,
 					backEnd.viewParms.viewportWidth,
 					backEnd.viewParms.viewportHeight );
-
-// TODO: insert handling for widescreen?  (when looking through camera)
-	qglScissor(     backEnd.viewParms.viewportX,
-					backEnd.viewParms.viewportY,
-					backEnd.viewParms.viewportWidth,
-					backEnd.viewParms.viewportHeight );
 }
 
 /*
@@ -1090,7 +1084,6 @@ void    RB_SetGL2D( void ) {
 
 	// set 2D virtual screen size
 	qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-	qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 	qglMatrixMode( GL_PROJECTION );
 	qglLoadIdentity();
 	qglOrtho( 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1 );

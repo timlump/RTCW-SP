@@ -1356,7 +1356,6 @@ Draws x/y/z lines from the origin for orientation debugging
 */
 void RB_SurfaceAxis( void ) {
 	GL_Bind( tr.whiteImage );
-	qglLineWidth( 3 );
 	qglBegin( GL_LINES );
 	qglColor3f( 1,0,0 );
 	qglVertex3f( 0,0,0 );
@@ -1368,7 +1367,6 @@ void RB_SurfaceAxis( void ) {
 	qglVertex3f( 0,0,0 );
 	qglVertex3f( 0,0,16 );
 	qglEnd();
-	qglLineWidth( 1 );
 }
 
 //===========================================================================
@@ -1477,9 +1475,6 @@ void RB_SurfaceFlare( srfFlare_t *surf ) {
 
 
 void RB_SurfaceDisplayList( srfDisplayList_t *surf ) {
-	// all apropriate state must be set in RB_BeginSurface
-	// this isn't implemented yet...
-	qglCallList( surf->listNum );
 }
 
 void RB_SurfaceSkip( void *surf ) {
