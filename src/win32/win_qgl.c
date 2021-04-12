@@ -101,7 +101,6 @@ void ( APIENTRY * qglAlphaFunc )( GLenum func, GLclampf ref );
 void ( APIENTRY * qglArrayElement )( GLint i );
 void ( APIENTRY * qglBegin )( GLenum mode );
 void ( APIENTRY * qglBindTexture )( GLenum target, GLuint texture );
-void ( APIENTRY * qglBitmap )( GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, const GLubyte *bitmap );
 void ( APIENTRY * qglBlendFunc )( GLenum sfactor, GLenum dfactor );
 void ( APIENTRY * qglClear )( GLbitfield mask );
 void ( APIENTRY * qglClearColor )( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha );
@@ -140,8 +139,6 @@ void ( APIENTRY * qglLoadMatrixf )( const GLfloat *m );
 void ( APIENTRY * qglMatrixMode )( GLenum mode );
 
 void ( APIENTRY * qglOrtho )( GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar );
-void ( APIENTRY * qglPolygonMode )( GLenum face, GLenum mode );
-void ( APIENTRY * qglPolygonOffset )( GLfloat factor, GLfloat units );
 void ( APIENTRY * qglPopMatrix )( void );
 void ( APIENTRY * qglPushMatrix )( void );
 void ( APIENTRY * qglTexCoord2f )( GLfloat s, GLfloat t );
@@ -227,11 +224,6 @@ void glBegin_impl(GLenum mode)
 void glBindTexture_impl(GLenum target, GLuint texture)
 { 
 	glBindTexture(target, texture);
-}
-
-void glBitmap_impl(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, const GLubyte* bitmap)
-{
-	//glBitmap(width, height, xorig, yorig, xmove, ymove, bitmap);
 }
 
 sg_blend_factor gl_to_sgl_blend_factor(GLenum factor) {
@@ -616,16 +608,6 @@ void glOrtho_impl(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, 
 	glOrtho(left, right, bottom, top, zNear, zFar);
 }
 
-void glPolygonMode_impl(GLenum face, GLenum mode)
-{
-	glPolygonMode(face, mode);
-}
-
-void glPolygonOffset_impl(GLfloat factor, GLfloat units)
-{
-	glPolygonOffset(factor, units);
-}
-
 void glPopMatrix_impl(void)
 {
 	sgl_pop_matrix();
@@ -742,7 +724,6 @@ void QGL_Shutdown( void ) {
 	qglArrayElement              = NULL;
 	qglBegin                     = NULL;
 	qglBindTexture               = NULL;
-	qglBitmap                    = NULL;
 	qglBlendFunc                 = NULL;
 	qglClear                     = NULL;
 	qglClearColor                = NULL;
@@ -780,8 +761,6 @@ void QGL_Shutdown( void ) {
 	qglLoadMatrixf               = NULL;
 	qglMatrixMode                = NULL;
 	qglOrtho                     = NULL;
-	qglPolygonMode               = NULL;
-	qglPolygonOffset             = NULL;
 	qglPopMatrix                 = NULL;
 	qglPushMatrix                = NULL;
 	qglTexCoord2f                = NULL;
@@ -879,7 +858,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglArrayElement              = glArrayElement_impl;
 	qglBegin                     = glBegin_impl;
 	qglBindTexture               = glBindTexture_impl;
-	qglBitmap                    = glBitmap_impl;
 	qglBlendFunc                 = glBlendFunc_impl;
 	qglClear                     = glClear_impl;
 	qglClearColor                = glClearColor_impl;
@@ -917,8 +895,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglLoadMatrixf               = glLoadMatrixf_impl;
 	qglMatrixMode                = glMatrixMode_impl;
 	qglOrtho                     = glOrtho_impl;
-	qglPolygonMode               = glPolygonMode_impl;
-	qglPolygonOffset             = glPolygonOffset_impl;
 	qglPopMatrix                 = glPopMatrix_impl;
 	qglPushMatrix                = glPushMatrix_impl;
 	qglTexCoord2f                = glTexCoord2f_impl;
