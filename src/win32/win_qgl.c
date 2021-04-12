@@ -144,8 +144,6 @@ void ( APIENTRY * qglPolygonMode )( GLenum face, GLenum mode );
 void ( APIENTRY * qglPolygonOffset )( GLfloat factor, GLfloat units );
 void ( APIENTRY * qglPopMatrix )( void );
 void ( APIENTRY * qglPushMatrix )( void );
-void ( APIENTRY * qglRasterPos3fv )( const GLfloat *v );
-void ( APIENTRY * qglReadPixels )( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels );
 void ( APIENTRY * qglTexCoord2f )( GLfloat s, GLfloat t );
 void ( APIENTRY * qglTexCoord2fv )( const GLfloat *v );
 void ( APIENTRY * qglTexCoordPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
@@ -640,16 +638,6 @@ void glPushMatrix_impl(void)
 	glPushMatrix();
 }
 
-void glRasterPos3fv_impl(const GLfloat* v)
-{
-	glRasterPos3fv(v);
-}
-
-void glReadPixels_impl(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
-{
-	glReadPixels(x, y, width, height, format, type, pixels);
-}
-
 void glTexCoord2f_impl(GLfloat s, GLfloat t)
 {
 	sgl_t2f(s, t);
@@ -659,7 +647,7 @@ void glTexCoord2f_impl(GLfloat s, GLfloat t)
 void glTexCoord2fv_impl(const GLfloat* v)
 {
 	sgl_t2f(v[0], v[1]);
-	glTexCoord3fv(v);
+	glTexCoord2fv(v);
 }
 
 void glTexEnvf_impl(GLenum target, GLenum pname, GLfloat param)
@@ -796,8 +784,6 @@ void QGL_Shutdown( void ) {
 	qglPolygonOffset             = NULL;
 	qglPopMatrix                 = NULL;
 	qglPushMatrix                = NULL;
-	qglRasterPos3fv              = NULL;
-	qglReadPixels                = NULL;
 	qglTexCoord2f                = NULL;
 	qglTexCoord2fv               = NULL;
 	qglTexCoordPointer           = NULL;
@@ -935,8 +921,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglPolygonOffset             = glPolygonOffset_impl;
 	qglPopMatrix                 = glPopMatrix_impl;
 	qglPushMatrix                = glPushMatrix_impl;
-	qglRasterPos3fv              = glRasterPos3fv_impl;
-	qglReadPixels                = glReadPixels_impl;
 	qglTexCoord2f                = glTexCoord2f_impl;
 	qglTexCoord2fv               = glTexCoord2fv_impl;
 	qglTexCoordPointer           = glTexCoordPointer_impl;

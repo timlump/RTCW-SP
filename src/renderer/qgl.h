@@ -155,8 +155,6 @@ extern void ( APIENTRY * qglPolygonMode )( GLenum face, GLenum mode );
 extern void ( APIENTRY * qglPolygonOffset )( GLfloat factor, GLfloat units );
 extern void ( APIENTRY * qglPopMatrix )( void );
 extern void ( APIENTRY * qglPushMatrix )( void );
-extern void ( APIENTRY * qglRasterPos3fv )( const GLfloat *v );
-extern void ( APIENTRY * qglReadPixels )( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels );
 extern void ( APIENTRY * qglTexCoord2f )( GLfloat s, GLfloat t );
 extern void ( APIENTRY * qglTexCoord2fv )( const GLfloat *v );
 extern void ( APIENTRY * qglTexCoordPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );

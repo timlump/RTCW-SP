@@ -112,7 +112,6 @@ void glLabeledPoint( idVec3 &color, idVec3 &point, float size, const char *label
 	v.x += 1;
 	v.y += 1;
 	v.z += 1;
-	qglRasterPos3fv( v );
 }
 
 
