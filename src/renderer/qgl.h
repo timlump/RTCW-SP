@@ -117,12 +117,11 @@ extern void ( APIENTRY * qglClearColor )( GLclampf red, GLclampf green, GLclampf
 extern void ( APIENTRY * qglClearDepth )( GLclampd depth );
 extern void ( APIENTRY * qglClearIndex )( GLfloat c );
 extern void ( APIENTRY * qglClearStencil )( GLint s );
-extern void ( APIENTRY * qglClipPlane )( GLenum plane, const GLdouble *equation );
 extern void ( APIENTRY * qglColor3f )( GLfloat red, GLfloat green, GLfloat blue );
 extern void ( APIENTRY * qglColor3fv )( const GLfloat *v );
 extern void ( APIENTRY * qglColor3ubv )( const GLubyte *v );
 extern void ( APIENTRY * qglColor4f )( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha );
-extern void (APIENTRY* qglColor4ubv)(const GLubyte* v);
+extern void ( APIENTRY* qglColor4ubv)(const GLubyte* v);
 extern void ( APIENTRY * qglColorMask )( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
 extern void ( APIENTRY * qglColorPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 extern void ( APIENTRY * qglCullFace )( GLenum mode );
@@ -159,7 +158,6 @@ extern void ( APIENTRY * qglTexEnvf )( GLenum target, GLenum pname, GLfloat para
 extern void ( APIENTRY * qglTexImage2D )( GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels );
 extern void ( APIENTRY * qglTexParameterf )( GLenum target, GLenum pname, GLfloat param );
 extern void ( APIENTRY * qglTexParameterfv )( GLenum target, GLenum pname, const GLfloat *params );
-extern void ( APIENTRY * qglTexSubImage2D )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels );
 extern void ( APIENTRY * qglTranslatef )( GLfloat x, GLfloat y, GLfloat z );
 extern void ( APIENTRY * qglVertex2f )( GLfloat x, GLfloat y );
 extern void ( APIENTRY * qglVertex3f )( GLfloat x, GLfloat y, GLfloat z );

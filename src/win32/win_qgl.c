@@ -148,7 +148,6 @@ void ( APIENTRY * qglTexEnvf )( GLenum target, GLenum pname, GLfloat param );
 void ( APIENTRY * qglTexImage2D )( GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels );
 void ( APIENTRY * qglTexParameterf )( GLenum target, GLenum pname, GLfloat param );
 void ( APIENTRY * qglTexParameterfv )( GLenum target, GLenum pname, const GLfloat *params );
-void ( APIENTRY * qglTexSubImage2D )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels );
 void ( APIENTRY * qglTranslatef )( GLfloat x, GLfloat y, GLfloat z );
 void ( APIENTRY * qglVertex2f )( GLfloat x, GLfloat y );
 void ( APIENTRY * qglVertex3f )( GLfloat x, GLfloat y, GLfloat z );
@@ -296,11 +295,6 @@ void glClearStencil_impl(GLint s)
 {
 	clear_action.stencil.val = s;
 	glClearStencil(s);
-}
-
-void glClipPlane_impl(GLenum plane, const GLdouble* equation)
-{
-	glClipPlane(plane, equation);
 }
 
 void glColor3f_impl(GLfloat red, GLfloat green, GLfloat blue)
@@ -667,11 +661,6 @@ void glTexParameterfv_impl(GLenum target, GLenum pname, const GLfloat* params)
 	glTexParameterfv(target, pname, params);
 }
 
-void glTexSubImage2D_impl(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels)
-{
-	glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
-}
-
 void glTranslatef_impl(GLfloat x, GLfloat y, GLfloat z)
 {
 	sgl_translate(x, y, z);
@@ -729,7 +718,6 @@ void QGL_Shutdown( void ) {
 	qglClearColor                = NULL;
 	qglClearDepth                = NULL;
 	qglClearStencil              = NULL;
-	qglClipPlane                 = NULL;
 	qglColor3f                   = NULL;
 	qglColor3fv                  = NULL;
 	qglColor4f                   = NULL;
@@ -770,7 +758,6 @@ void QGL_Shutdown( void ) {
 	qglTexImage2D                = NULL;
 	qglTexParameterf             = NULL;
 	qglTexParameterfv            = NULL;
-	qglTexSubImage2D             = NULL;
 	qglTranslatef                = NULL;
 	qglVertex3f                  = NULL;
 	qglVertex3fv                 = NULL;
@@ -863,7 +850,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglClearColor                = glClearColor_impl;
 	qglClearDepth                = glClearDepth_impl;
 	qglClearStencil              = glClearStencil_impl;
-	qglClipPlane                 = glClipPlane_impl;
 	qglColor3f                   = glColor3f_impl;
 	qglColor3fv                  = glColor3fv_impl;
 	qglColor4f                   = glColor4f_impl;
@@ -904,7 +890,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglTexImage2D                = glTexImage2D_impl;
 	qglTexParameterf             = glTexParameterf_impl;
 	qglTexParameterfv            = glTexParameterfv_impl;
-	qglTexSubImage2D             = glTexSubImage2D_impl;
 	qglTranslatef                = glTranslatef_impl;
 	qglVertex2f                  = glVertex2f_impl;
 	qglVertex3f                  = glVertex3f_impl;
