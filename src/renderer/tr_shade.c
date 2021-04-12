@@ -45,11 +45,7 @@ This is just for OpenGL conformance testing, it should never be the fastest
 ================
 */
 static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
-	qglColor4ubv( tess.svars.colors[ index ] );
-	{
-		qglTexCoord2fv( tess.svars.texcoords[ 0 ][ index ] );
-	}
-	qglVertex3fv( tess.xyz[ index ] );
+
 }
 
 /*
@@ -283,25 +279,7 @@ Draws vertex normals for debugging
 ================
 */
 static void DrawNormals( shaderCommands_t *input ) {
-	int i;
-	vec3_t temp;
 
-	GL_Bind( tr.whiteImage );
-	qglColor3f( 1,1,1 );
-
-	if ( r_shownormals->integer == 1 ) {
-		qglDepthRange( 0, 0 );  // never occluded
-	}
-	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
-
-	qglBegin( GL_LINES );
-	for ( i = 0 ; i < input->numVertexes ; i++ ) {
-		qglVertex3fv( input->xyz[i] );
-		VectorMA( input->xyz[i], 2, input->normal[i], temp );
-		qglVertex3fv( temp );
-	}
-	qglEnd();
-	qglDepthRange( 0, 1 );
 }
 
 /*

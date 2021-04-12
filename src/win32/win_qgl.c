@@ -149,9 +149,6 @@ void ( APIENTRY * qglTexImage2D )( GLenum target, GLint level, GLint internalfor
 void ( APIENTRY * qglTexParameterf )( GLenum target, GLenum pname, GLfloat param );
 void ( APIENTRY * qglTexParameterfv )( GLenum target, GLenum pname, const GLfloat *params );
 void ( APIENTRY * qglTranslatef )( GLfloat x, GLfloat y, GLfloat z );
-void ( APIENTRY * qglVertex2f )( GLfloat x, GLfloat y );
-void ( APIENTRY * qglVertex3f )( GLfloat x, GLfloat y, GLfloat z );
-void ( APIENTRY * qglVertex3fv )( const GLfloat *v );
 void ( APIENTRY * qglVertexPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 void ( APIENTRY * qglViewport )( GLint x, GLint y, GLsizei width, GLsizei height );
 
@@ -667,24 +664,6 @@ void glTranslatef_impl(GLfloat x, GLfloat y, GLfloat z)
 	glTranslatef(x, y, z);
 }
 
-void glVertex2f_impl(GLfloat x, GLfloat y)
-{
-	sgl_v2f(x, y);
-	glVertex2f(x, y);
-}
-
-void glVertex3f_impl(GLfloat x, GLfloat y, GLfloat z)
-{
-	sgl_v3f(x, y, z);
-	glVertex3f(x, y, z);
-}
-
-void glVertex3fv_impl(const GLfloat* v)
-{
-	sgl_v3f(v[0], v[1], v[2]);
-	glVertex3fv(v);
-}
-
 void glViewport_impl(GLint x, GLint y, GLsizei width, GLsizei height)
 {
 	sgl_viewport(x, y, width, height, false);
@@ -759,9 +738,6 @@ void QGL_Shutdown( void ) {
 	qglTexParameterf             = NULL;
 	qglTexParameterfv            = NULL;
 	qglTranslatef                = NULL;
-	qglVertex3f                  = NULL;
-	qglVertex3fv                 = NULL;
-	qglVertexPointer             = NULL;
 	qglViewport                  = NULL;
 
 	qwglCreateContext            = NULL;
@@ -891,9 +867,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglTexParameterf             = glTexParameterf_impl;
 	qglTexParameterfv            = glTexParameterfv_impl;
 	qglTranslatef                = glTranslatef_impl;
-	qglVertex2f                  = glVertex2f_impl;
-	qglVertex3f                  = glVertex3f_impl;
-	qglVertex3fv                 = glVertex3fv_impl;
 	qglVertexPointer             = glVertexPointer_impl;
 	qglViewport                  = glViewport_impl;
 
