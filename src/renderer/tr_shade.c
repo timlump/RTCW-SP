@@ -361,12 +361,6 @@ static void DrawMultitextured( shaderCommands_t *input, int stage ) {
 
 	GL_State( pStage->stateBits );
 
-	// this is an ugly hack to work around a GeForce driver
-	// bug with multitexture and clip planes
-	if ( backEnd.viewParms.isPortal ) {
-		qglPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-	}
-
 	//
 	// base
 	//
@@ -1259,12 +1253,6 @@ void RB_StageIteratorGeneric( void ) {
 	// set face culling appropriately
 	//
 	GL_Cull( input->shader->cullType );
-
-	// set polygon offset if necessary
-	if ( input->shader->polygonOffset ) {
-		qglEnable( GL_POLYGON_OFFSET_FILL );
-		qglPolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
-	}
 
 	//
 	// if there is only a single pass then we can enable color

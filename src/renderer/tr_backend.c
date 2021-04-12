@@ -292,18 +292,6 @@ void GL_State( unsigned long stateBits ) {
 	}
 
 	//
-	// fill/line mode
-	//
-	if ( diff & GLS_POLYMODE_LINE ) {
-		if ( stateBits & GLS_POLYMODE_LINE ) {
-			qglPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-		} else
-		{
-			qglPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-		}
-	}
-
-	//
 	// depthtest
 	//
 	if ( diff & GLS_DEPTHTEST_DISABLE ) {

@@ -734,7 +734,6 @@ void GL_SetDefaultState( void ) {
 	//
 	glState.glStateBits = GLS_DEPTHTEST_DISABLE | GLS_DEPTHMASK_TRUE;
 
-	qglPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	qglDepthMask( GL_TRUE );
 	qglDisable( GL_DEPTH_TEST );
 	qglEnable( GL_SCISSOR_TEST );
