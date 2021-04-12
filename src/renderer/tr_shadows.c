@@ -142,7 +142,6 @@ void RB_ShadowTessEnd( void ) {
 	GL_Bind( tr.whiteImage );
 	qglEnable( GL_CULL_FACE );
 	GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-	qglColor3f( 0.2f, 0.2f, 0.2f );
 
 	// don't write to the color buffer
 	qglColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );

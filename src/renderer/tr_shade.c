@@ -251,23 +251,7 @@ Draws triangle outlines for debugging
 ================
 */
 static void DrawTris( shaderCommands_t *input ) {
-	GL_Bind( tr.whiteImage );
-	qglColor3f( 1,1,1 );
 
-	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
-
-	if ( r_showtris->integer == 1 ) {
-		qglDepthRange( 0, 0 );
-	}
-
-	qglDisableClientState( GL_COLOR_ARRAY );
-	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
-
-	qglVertexPointer( 3, GL_FLOAT, 16, input->xyz ); // padded for SIMD
-
-	R_DrawElements( input->numIndexes, input->indexes );
-
-	qglDepthRange( 0, 1 );
 }
 
 
@@ -1392,13 +1376,8 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 	GL_State( GLS_DEFAULT );
 	qglVertexPointer( 3, GL_FLOAT, 16, input->xyz );
 
-#ifdef REPLACE_MODE
-	qglDisableClientState( GL_COLOR_ARRAY );
-	qglColor3f( 1, 1, 1 );
-#else
 	qglEnableClientState( GL_COLOR_ARRAY );
 	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.constantColor255 );
-#endif
 
 	//
 	// select base stage

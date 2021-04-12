@@ -107,10 +107,6 @@ void ( APIENTRY * qglClearColor )( GLclampf red, GLclampf green, GLclampf blue, 
 void ( APIENTRY * qglClearDepth )( GLclampd depth );
 void ( APIENTRY * qglClearStencil )( GLint s );
 void ( APIENTRY * qglClipPlane )( GLenum plane, const GLdouble *equation );
-void ( APIENTRY * qglColor3f )( GLfloat red, GLfloat green, GLfloat blue );
-void ( APIENTRY * qglColor3fv )( const GLfloat *v );
-void ( APIENTRY * qglColor4f )( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha );
-void ( APIENTRY * qglColor4ubv )( const GLubyte *v );
 void ( APIENTRY * qglColorMask )( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
 void ( APIENTRY * qglColorPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 void ( APIENTRY * qglCullFace )( GLenum mode );
@@ -141,8 +137,6 @@ void ( APIENTRY * qglMatrixMode )( GLenum mode );
 void ( APIENTRY * qglOrtho )( GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar );
 void ( APIENTRY * qglPopMatrix )( void );
 void ( APIENTRY * qglPushMatrix )( void );
-void ( APIENTRY * qglTexCoord2f )( GLfloat s, GLfloat t );
-void ( APIENTRY * qglTexCoord2fv )( const GLfloat *v );
 void ( APIENTRY * qglTexCoordPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 void ( APIENTRY * qglTexEnvf )( GLenum target, GLenum pname, GLfloat param );
 void ( APIENTRY * qglTexImage2D )( GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels );
@@ -292,36 +286,6 @@ void glClearStencil_impl(GLint s)
 {
 	clear_action.stencil.val = s;
 	glClearStencil(s);
-}
-
-void glColor3f_impl(GLfloat red, GLfloat green, GLfloat blue)
-{
-	sgl_c3f(red, green, blue);
-	glColor3f(red, green, blue);
-}
-
-void glColor3fv_impl(const GLfloat* v)
-{
-	sgl_c3f(v[0], v[1], v[2]);
-	glColor3fv(v);
-}
-
-void glColor3ubv_impl(const GLubyte* v)
-{
-	sgl_c3b(v[0], v[1], v[2]);
-	glColor3ubv(v);
-}
-
-void glColor4f_impl(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
-{
-	sgl_c4f(red, green, blue, alpha);
-	glColor4f(red, green, blue, alpha);
-}
-
-void glColor4ubv_impl(const GLubyte* v)
-{
-	sgl_c4b(v[0], v[1], v[2], v[3]);
-	glColor4ubv(v);
 }
 
 void glColorMask_impl(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
@@ -611,18 +575,6 @@ void glPushMatrix_impl(void)
 	glPushMatrix();
 }
 
-void glTexCoord2f_impl(GLfloat s, GLfloat t)
-{
-	sgl_t2f(s, t);
-	glTexCoord2f(s, t);
-}
-
-void glTexCoord2fv_impl(const GLfloat* v)
-{
-	sgl_t2f(v[0], v[1]);
-	glTexCoord2fv(v);
-}
-
 void glTexEnvf_impl(GLenum target, GLenum pname, GLfloat param)
 {
 	glTexEnvf(target, pname, param);
@@ -697,10 +649,6 @@ void QGL_Shutdown( void ) {
 	qglClearColor                = NULL;
 	qglClearDepth                = NULL;
 	qglClearStencil              = NULL;
-	qglColor3f                   = NULL;
-	qglColor3fv                  = NULL;
-	qglColor4f                   = NULL;
-	qglColor4ubv                 = NULL;
 	qglColorMask                 = NULL;
 	qglColorPointer              = NULL;
 	qglCullFace                  = NULL;
@@ -730,8 +678,6 @@ void QGL_Shutdown( void ) {
 	qglOrtho                     = NULL;
 	qglPopMatrix                 = NULL;
 	qglPushMatrix                = NULL;
-	qglTexCoord2f                = NULL;
-	qglTexCoord2fv               = NULL;
 	qglTexCoordPointer           = NULL;
 	qglTexEnvf                   = NULL;
 	qglTexImage2D                = NULL;
@@ -826,10 +772,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglClearColor                = glClearColor_impl;
 	qglClearDepth                = glClearDepth_impl;
 	qglClearStencil              = glClearStencil_impl;
-	qglColor3f                   = glColor3f_impl;
-	qglColor3fv                  = glColor3fv_impl;
-	qglColor4f                   = glColor4f_impl;
-	qglColor4ubv                 = glColor4ubv_impl;
 	qglColorMask                 = glColorMask_impl;
 	qglColorPointer              = glColorPointer_impl;
 	qglCullFace                  = glCullFace_impl;
@@ -859,8 +801,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglOrtho                     = glOrtho_impl;
 	qglPopMatrix                 = glPopMatrix_impl;
 	qglPushMatrix                = glPushMatrix_impl;
-	qglTexCoord2f                = glTexCoord2f_impl;
-	qglTexCoord2fv               = glTexCoord2fv_impl;
 	qglTexCoordPointer           = glTexCoordPointer_impl;
 	qglTexEnvf                   = glTexEnvf_impl;
 	qglTexImage2D                = glTexImage2D_impl;
