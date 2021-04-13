@@ -143,9 +143,6 @@ void RB_ShadowTessEnd( void ) {
 	qglEnable( GL_CULL_FACE );
 	GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
 
-	// don't write to the color buffer
-	qglColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
-
 	// mirrors have the culling order reversed
 	if ( backEnd.viewParms.isMirror ) {
 		qglCullFace( GL_FRONT );
@@ -165,9 +162,6 @@ void RB_ShadowTessEnd( void ) {
 		R_RenderShadowEdges();
 	}
 
-
-	// reenable writing to the color buffer
-	qglColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 }
 
 

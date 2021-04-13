@@ -106,8 +106,6 @@ void ( APIENTRY * qglClear )( GLbitfield mask );
 void ( APIENTRY * qglClearColor )( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha );
 void ( APIENTRY * qglClearDepth )( GLclampd depth );
 void ( APIENTRY * qglClearStencil )( GLint s );
-void ( APIENTRY * qglClipPlane )( GLenum plane, const GLdouble *equation );
-void ( APIENTRY * qglColorMask )( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
 void ( APIENTRY * qglColorPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 void ( APIENTRY * qglCullFace )( GLenum mode );
 void ( APIENTRY * qglDeleteTextures )( GLsizei n, const GLuint *textures );
@@ -116,8 +114,6 @@ void ( APIENTRY * qglDepthMask )( GLboolean flag );
 void ( APIENTRY * qglDepthRange )( GLclampd zNear, GLclampd zFar );
 void ( APIENTRY * qglDisable )( GLenum cap );
 void ( APIENTRY * qglDisableClientState )( GLenum array );
-void ( APIENTRY * qglDrawBuffer )( GLenum mode );
-void ( APIENTRY * qglDrawElements )( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
 void ( APIENTRY * qglEnable )( GLenum cap );
 void ( APIENTRY * qglEnableClientState )( GLenum array );
 void ( APIENTRY * qglEnd )( void );
@@ -138,10 +134,8 @@ void ( APIENTRY * qglOrtho )( GLdouble left, GLdouble right, GLdouble bottom, GL
 void ( APIENTRY * qglPopMatrix )( void );
 void ( APIENTRY * qglPushMatrix )( void );
 void ( APIENTRY * qglTexCoordPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
-void ( APIENTRY * qglTexEnvf )( GLenum target, GLenum pname, GLfloat param );
 void ( APIENTRY * qglTexImage2D )( GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels );
 void ( APIENTRY * qglTexParameterf )( GLenum target, GLenum pname, GLfloat param );
-void ( APIENTRY * qglTexParameterfv )( GLenum target, GLenum pname, const GLfloat *params );
 void ( APIENTRY * qglTranslatef )( GLfloat x, GLfloat y, GLfloat z );
 void ( APIENTRY * qglVertexPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 void ( APIENTRY * qglViewport )( GLint x, GLint y, GLsizei width, GLsizei height );
@@ -288,11 +282,6 @@ void glClearStencil_impl(GLint s)
 	glClearStencil(s);
 }
 
-void glColorMask_impl(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
-{
-	glColorMask(red, green, blue, alpha);
-}
-
 void glColorPointer_impl(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 {
 	color_pointer.size = size;
@@ -352,16 +341,6 @@ void glDepthMask_impl(GLboolean flag)
 void glDepthRange_impl(GLclampd zNear, GLclampd zFar)
 {
 	glDepthRange(zNear, zFar);
-}
-
-void glDrawBuffer_impl(GLenum mode)
-{
-	glDrawBuffer(mode);
-}
-
-void glDrawElements_impl(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices)
-{
-	glDrawElements(mode, count, type, indices);
 }
 
 void glEnable_impl(GLenum cap)
@@ -575,11 +554,6 @@ void glPushMatrix_impl(void)
 	glPushMatrix();
 }
 
-void glTexEnvf_impl(GLenum target, GLenum pname, GLfloat param)
-{
-	glTexEnvf(target, pname, param);
-}
-
 void glTexImage2D_impl(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels)
 {
 	/*{
@@ -605,10 +579,6 @@ void glTexParameterf_impl(GLenum target, GLenum pname, GLfloat param)
 	glTexParameterf(target, pname, param);
 }
 
-void glTexParameterfv_impl(GLenum target, GLenum pname, const GLfloat* params)
-{
-	glTexParameterfv(target, pname, params);
-}
 
 void glTranslatef_impl(GLfloat x, GLfloat y, GLfloat z)
 {
@@ -649,7 +619,6 @@ void QGL_Shutdown( void ) {
 	qglClearColor                = NULL;
 	qglClearDepth                = NULL;
 	qglClearStencil              = NULL;
-	qglColorMask                 = NULL;
 	qglColorPointer              = NULL;
 	qglCullFace                  = NULL;
 	qglDeleteTextures            = NULL;
@@ -658,8 +627,6 @@ void QGL_Shutdown( void ) {
 	qglDepthRange                = NULL;
 	qglDisable                   = NULL;
 	qglDisableClientState        = NULL;
-	qglDrawBuffer                = NULL;
-	qglDrawElements              = NULL;
 	qglEnable                    = NULL;
 	qglEnableClientState         = NULL;
 	qglEnd                       = NULL;
@@ -679,10 +646,8 @@ void QGL_Shutdown( void ) {
 	qglPopMatrix                 = NULL;
 	qglPushMatrix                = NULL;
 	qglTexCoordPointer           = NULL;
-	qglTexEnvf                   = NULL;
 	qglTexImage2D                = NULL;
 	qglTexParameterf             = NULL;
-	qglTexParameterfv            = NULL;
 	qglTranslatef                = NULL;
 	qglViewport                  = NULL;
 
@@ -772,7 +737,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglClearColor                = glClearColor_impl;
 	qglClearDepth                = glClearDepth_impl;
 	qglClearStencil              = glClearStencil_impl;
-	qglColorMask                 = glColorMask_impl;
 	qglColorPointer              = glColorPointer_impl;
 	qglCullFace                  = glCullFace_impl;
 	qglDeleteTextures            = glDeleteTextures_impl;
@@ -781,8 +745,6 @@ qboolean QGL_Init( const char *dllname ) {
 	qglDepthRange                = glDepthRange_impl;
 	qglDisable                   = glDisable_impl;
 	qglDisableClientState        = glDisableClientState_impl;
-	qglDrawBuffer                = glDrawBuffer_impl;
-	qglDrawElements              = glDrawElements_impl;
 	qglEnable                    = glEnable_impl;
 	qglEnableClientState         = glEnableClientState_impl;
 	qglEnd                       = glEnd_impl;
@@ -802,10 +764,8 @@ qboolean QGL_Init( const char *dllname ) {
 	qglPopMatrix                 = glPopMatrix_impl;
 	qglPushMatrix                = glPushMatrix_impl;
 	qglTexCoordPointer           = glTexCoordPointer_impl;
-	qglTexEnvf                   = glTexEnvf_impl;
 	qglTexImage2D                = glTexImage2D_impl;
 	qglTexParameterf             = glTexParameterf_impl;
-	qglTexParameterfv            = glTexParameterfv_impl;
 	qglTranslatef                = glTranslatef_impl;
 	qglVertexPointer             = glVertexPointer_impl;
 	qglViewport                  = glViewport_impl;

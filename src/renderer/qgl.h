@@ -117,7 +117,6 @@ extern void ( APIENTRY * qglClearColor )( GLclampf red, GLclampf green, GLclampf
 extern void ( APIENTRY * qglClearDepth )( GLclampd depth );
 extern void ( APIENTRY * qglClearIndex )( GLfloat c );
 extern void ( APIENTRY * qglClearStencil )( GLint s );
-extern void ( APIENTRY * qglColorMask )( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
 extern void ( APIENTRY * qglColorPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 extern void ( APIENTRY * qglCullFace )( GLenum mode );
 extern void ( APIENTRY * qglDeleteTextures )( GLsizei n, const GLuint *textures );
@@ -126,8 +125,6 @@ extern void ( APIENTRY * qglDepthMask )( GLboolean flag );
 extern void ( APIENTRY * qglDepthRange )( GLclampd zNear, GLclampd zFar );
 extern void ( APIENTRY * qglDisable )( GLenum cap );
 extern void ( APIENTRY * qglDisableClientState )( GLenum array );
-extern void ( APIENTRY * qglDrawBuffer )( GLenum mode );
-extern void ( APIENTRY * qglDrawElements )( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
 extern void ( APIENTRY * qglEnable )( GLenum cap );
 extern void ( APIENTRY * qglEnableClientState )( GLenum array );
 extern void ( APIENTRY * qglEnd )( void );
@@ -147,10 +144,8 @@ extern void ( APIENTRY * qglOrtho )( GLdouble left, GLdouble right, GLdouble bot
 extern void ( APIENTRY * qglPopMatrix )( void );
 extern void ( APIENTRY * qglPushMatrix )( void );
 extern void ( APIENTRY * qglTexCoordPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
-extern void ( APIENTRY * qglTexEnvf )( GLenum target, GLenum pname, GLfloat param );
 extern void ( APIENTRY * qglTexImage2D )( GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels );
 extern void ( APIENTRY * qglTexParameterf )( GLenum target, GLenum pname, GLfloat param );
-extern void ( APIENTRY * qglTexParameterfv )( GLenum target, GLenum pname, const GLfloat *params );
 extern void ( APIENTRY * qglTranslatef )( GLfloat x, GLfloat y, GLfloat z );
 extern void ( APIENTRY * qglVertexPointer )( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 extern void ( APIENTRY * qglViewport )( GLint x, GLint y, GLsizei width, GLsizei height );

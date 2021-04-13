@@ -170,10 +170,6 @@ static void R_DrawElements( int numIndexes, const glIndex_t *indexes ) {
 
 
 	if ( primitives == 2 ) {
-		qglDrawElements( GL_TRIANGLES,
-						 numIndexes,
-						 GL_INDEX_TYPE,
-						 indexes );
 		return;
 	}
 

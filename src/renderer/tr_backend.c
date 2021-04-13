@@ -523,7 +523,6 @@ void RB_BeginDrawingView( void ) {
 		plane2[3] = DotProduct( plane, backEnd.viewParms.or.origin ) - plane[3];
 
 		qglLoadMatrixf( s_flipMatrix );
-		qglClipPlane( GL_CLIP_PLANE0, plane2 );
 		qglEnable( GL_CLIP_PLANE0 );
 	} else {
 		qglDisable( GL_CLIP_PLANE0 );
@@ -1378,14 +1377,6 @@ const void  *RB_DrawBuffer( const void *data ) {
 	const drawBufferCommand_t   *cmd;
 
 	cmd = (const drawBufferCommand_t *)data;
-
-	qglDrawBuffer( cmd->buffer );
-
-	// clear screen for debugging
-	if ( r_clear->integer ) {
-		qglClearColor( 1, 0, 0.5, 1 );
-		qglClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	}
 
 	return (const void *)( cmd + 1 );
 }
